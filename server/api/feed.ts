@@ -12,6 +12,7 @@ type FeedItem = {
 type FeedResponse = {
   updatedAt: string
   items: FeedItem[]
+  artist?: SpotifyArtist
 }
 
 export default defineEventHandler(async (event): Promise<FeedResponse> => {
@@ -26,12 +27,16 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   })
   items.push(...youtubeItems)
 
-  const spotifyItems = await fetchSpotifyItems({
+  const spotifyConfig = {
     clientId: config.spotifyClientId,
     clientSecret: config.spotifyClientSecret,
     artistId: config.spotifyArtistId
-  })
+  }
+
+  const spotifyItems = await fetchSpotifyItems(spotifyConfig)
   items.push(...spotifyItems)
+
+  const spotifyArtist = await fetchSpotifyArtist(spotifyConfig)
 
   items.sort((a, b) => {
     const aTime = a.date ? new Date(a.date).getTime() : 0
@@ -41,7 +46,8 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
 
   return {
     updatedAt: new Date().toISOString(),
-    items
+    items,
+    artist: spotifyArtist || undefined
   }
 })
 
@@ -142,6 +148,15 @@ type SpotifyTokenResponse = {
   access_token: string
 }
 
+type SpotifyArtist = {
+  id: string
+  name: string
+  url: string
+  followers: number
+  genres: string[]
+  images: { url: string; width: number | null; height: number | null }[]
+}
+
 type SpotifyTopTracksResponse = {
   tracks: {
     id: string
@@ -179,6 +194,39 @@ async function fetchSpotifyItems({ clientId, clientSecret, artistId }: SpotifyCo
     }))
   } catch {
     return []
+  }
+}
+
+async function fetchSpotifyArtist({ clientId, clientSecret, artistId }: SpotifyConfig): Promise<SpotifyArtist | null> {
+  if (!clientId || !clientSecret || !artistId) {
+    return null
+  }
+
+  try {
+    const token = await fetchSpotifyToken(clientId, clientSecret)
+    const artist = await $fetch<{
+      id: string
+      name: string
+      external_urls: { spotify: string }
+      followers: { total: number }
+      genres: string[]
+      images: { url: string; width: number | null; height: number | null }[]
+    }>(`https://api.spotify.com/v1/artists/${artistId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    return {
+      id: artist.id,
+      name: artist.name,
+      url: artist.external_urls.spotify,
+      followers: artist.followers.total,
+      genres: artist.genres,
+      images: artist.images
+    }
+  } catch {
+    return null
   }
 }
 

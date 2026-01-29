@@ -13,6 +13,14 @@ type FeedItem = {
 type FeedResponse = {
   updatedAt: string
   items: FeedItem[]
+  artist?: {
+    id: string
+    name: string
+    url: string
+    followers: number
+    genres: string[]
+    images: { url: string; width: number | null; height: number | null }[]
+  }
 }
 
 const { data: feed, pending, error } = await useFetch<FeedResponse>('/api/feed', {
