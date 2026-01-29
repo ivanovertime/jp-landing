@@ -1,5 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  srcDir: 'app',
+  dir: {
+    public: '../public'
+  },
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
@@ -33,8 +37,21 @@ export default defineNuxtConfig({
     }
   },
 
+  runtimeConfig: (() => {
+    const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {}
+
+    return {
+      spotifyClientId: env.SPOTIFY_CLIENT_ID || '',
+      spotifyClientSecret: env.SPOTIFY_CLIENT_SECRET || '',
+      spotifyArtistId: env.SPOTIFY_ARTIST_ID || '12TET0GvQuCAO3O1tfwrf4',
+      youtubeChannelUrl: env.YOUTUBE_CHANNEL_URL || 'https://www.youtube.com/c/JpJheyPi',
+      youtubeChannelId: env.YOUTUBE_CHANNEL_ID || ''
+    }
+  })(),
+
   routeRules: {
-    '/': { prerender: true }
+    '/': { prerender: true, isr: 3600 },
+    '/api/feed': { cache: { maxAge: 3600, staleMaxAge: 600 } }
   },
 
   compatibilityDate: '2025-01-15',

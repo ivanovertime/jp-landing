@@ -1,53 +1,125 @@
 <script setup lang="ts">
-const appConfig = useAppConfig()
+type FeedItem = {
+  id: string
+  provider: 'youtube' | 'spotify'
+  type: string
+  embedUrl: string
+  aspectRatio?: string
+  height?: string
+  title?: string
+  date?: string
+}
 
-const { data: versions } = await useFetch(computed(() => `https://ungh.cc/repos/${appConfig.repository}/releases`), {
-  transform: (data: {
-    releases: {
-      name?: string
-      tag: string
-      publishedAt: string
-      markdown: string
-    }[]
-  }) => {
-    return data.releases.map(release => ({
-      tag: release.tag,
-      title: release.name || release.tag,
-      date: release.publishedAt,
-      markdown: release.markdown
-    }))
-  }
+type FeedResponse = {
+  updatedAt: string
+  items: FeedItem[]
+}
+
+const { data: feed, pending, error } = await useFetch<FeedResponse>('/api/feed', {
+  key: 'feed'
 })
+
+const items = computed(() => feed.value?.items ?? [])
+const updatedAt = computed(() => {
+  if (!feed.value?.updatedAt) {
+    return null
+  }
+
+  return new Date(feed.value.updatedAt).toLocaleString()
+})
+
+const socials = [
+  {
+    label: 'Spotify',
+    icon: 'i-simple-icons-spotify',
+    to: 'https://open.spotify.com/',
+    target: '_blank'
+  },
+  {
+    label: 'YouTube',
+    icon: 'i-simple-icons-youtube',
+    to: 'https://www.youtube.com/',
+    target: '_blank'
+  }
+]
 </script>
 
 <template>
-  <UChangelogVersions
-    as="main"
-    :indicator-motion="false"
-    :ui="{
-      root: 'py-16 sm:py-24 lg:py-32',
-      indicator: 'inset-y-0'
-    }"
-  >
-    <UChangelogVersion
-      v-for="version in versions"
-      :key="version.tag"
-      v-bind="version"
-      :ui="{
-        root: 'flex items-start',
-        container: 'max-w-xl',
-        header: 'border-b border-default pb-4',
-        title: 'text-3xl',
-        date: 'text-xs/9 text-highlighted font-mono',
-        indicator: 'sticky top-0 pt-16 -mt-16 sm:pt-24 sm:-mt-24 lg:pt-32 lg:-mt-32'
-      }"
-    >
-      <template #body>
-        <MDC
-          v-if="version.markdown"
-          :value="version.markdown"
-        />
-      </template>
-    </UChangelogVersion>
-  </UChangelogVersions>
+  <main class="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-16 sm:px-6 sm:py-24 lg:gap-20">
+    <section class="flex flex-col gap-8">
+      <div class="flex flex-col gap-4">
+        <UBadge color="primary" variant="subtle" class="w-fit">
+          Musician timeline
+        </UBadge>
+        <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
+          A living feed of releases, clips, and sessions.
+        </h1>
+        <p class="max-w-2xl text-base text-muted sm:text-lg">
+          Follow the latest drops across Spotify and YouTube. Every entry is embedded
+          so you can play, watch, and save without leaving the page.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <UButton
+          v-for="social in socials"
+          :key="social.label"
+          :icon="social.icon"
+          :to="social.to"
+          :target="social.target"
+          variant="outline"
+          size="lg"
+        >
+          {{ social.label }}
+        </UButton>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-semibold">Timeline</h2>
+          <p class="text-sm text-muted">
+            {{ updatedAt ? `Updated ${updatedAt}` : 'Updated hourly' }}
+          </p>
+        </div>
+        <UBadge color="neutral" variant="subtle">
+          One embed per moment
+        </UBadge>
+      </div>
+
+      <div v-if="error" class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">
+        Unable to load the feed right now.
+      </div>
+
+      <div v-else class="grid gap-8 lg:grid-cols-2">
+        <UCard
+          v-for="item in items"
+          :key="item.id"
+          :ui="{
+            body: 'flex flex-col gap-4',
+            header: 'flex flex-col gap-1'
+          }"
+        >
+          <template #header>
+            <div class="text-xs font-semibold uppercase tracking-wide text-muted">
+              {{ item.provider }} · {{ item.type }}
+            </div>
+            <div class="text-lg font-semibold text-highlighted">
+              {{ item.title || 'Latest drop' }}
+            </div>
+            <div v-if="item.date" class="text-xs text-muted">
+              {{ new Date(item.date).toLocaleDateString() }}
+            </div>
+          </template>
+
+          <EmbedFrame :item="item" />
+        </UCard>
+      </div>
+
+      <div v-if="pending" class="text-sm text-muted">
+        Loading the latest feed…
+      </div>
+    </section>
+  </main>
 </template>
