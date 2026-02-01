@@ -105,13 +105,6 @@ const socials = computed(() => [
           </UCard>
         </div>
 
-        <nav class="flex flex-wrap gap-4 text-sm font-semibold text-muted">
-          <a href="#section-releases" class="hover:text-highlighted">Releases</a>
-          <a href="#section-videos" class="hover:text-highlighted">Videos</a>
-          <a href="#section-about" class="hover:text-highlighted">About</a>
-          <a href="#section-contact" class="hover:text-highlighted">Contact</a>
-        </nav>
-
         <div class="flex flex-wrap gap-3">
           <UButton
             v-for="social in socials"
