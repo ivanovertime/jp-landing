@@ -22,11 +22,9 @@ const wrapperStyle = computed(() => {
   }
 
   if (props.item.height) {
-      if (props.item.provider === 'spotify') {
-        style.height = 'clamp(152px, 40vw, 200px)'
-      } else {
-        style.height = props.item.height
-      }
+    if (props.item.provider !== 'spotify') {
+      style.height = props.item.height
+    }
   }
 
   return style
@@ -45,6 +43,7 @@ const iframeAllow = computed(() => {
   <div class="rounded-2xl border border-default bg-default/60 shadow-sm">
     <div
       class="w-full overflow-hidden rounded-2xl bg-black/10"
+      :class="{ 'embed-spotify': item.provider === 'spotify' }"
       :style="wrapperStyle"
     >
       <iframe
@@ -65,3 +64,15 @@ const iframeAllow = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.embed-spotify {
+  height: clamp(152px, 9vw, 200px);
+}
+
+@media (min-width: 1440px) {
+  .embed-spotify {
+    height: clamp(152px, 4.5vw, 200px);
+  }
+}
+</style>
