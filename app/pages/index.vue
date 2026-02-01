@@ -44,6 +44,9 @@ const updatedAt = computed(() => {
 
 const artist = computed(() => feed.value?.artist ?? null)
 
+const { t, tArray } = useTranslations()
+const aboutCopy = computed(() => tArray('copy.about'))
+
 const releases = computed(() => items.value.filter(item => item.provider === 'spotify'))
 const videos = computed(() => items.value.filter(item => item.provider === 'youtube'))
 
@@ -157,29 +160,18 @@ const socials = computed(() => [
         <div class="flex flex-wrap items-center justify-between gap-6">
           <div class="flex flex-col gap-4">
             <UBadge color="primary" variant="subtle" class="w-fit">
-              Official artist page
+              {{ t('badges.official') }}
             </UBadge>
             <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
               {{ artist?.name || 'Jhey Pi' }}
             </h1>
             <div class="max-w-2xl text-sm text-muted sm:text-base">
-              <p>
-                Jhey Pi es un artista urbano emergente venezolano basado en EE.UU., con más de 1Millon
-                de seguidores orgánicos en sus redes sociales y un sonido melódico que conecta con
-                audiencias jóvenes latinas.
-              </p>
-              <p class="mt-4">
-                Su más reciente lanzamiento “Making LUV” está mostrando momentum notable: más de
-                10.000 streams solo en España en los primeros 15 días, guardados altos y repetición
-                orgánica.
-              </p>
-              <p class="mt-4">
-                Con influencias de Duki, Milo J y la nueva ola latina, Jhey Pi mezcla trap suave, vibra
-                callejera elegante y letras con identidad propia.
-              </p>
-              <p class="mt-4">
-                Todo su crecimiento ha sido sin disquera, impulsado por estrategia, contenido y
-                comunidad real.
+              <p
+                v-for="(paragraph, index) in aboutCopy"
+                :key="paragraph"
+                :class="{ 'mt-4': index > 0 }"
+              >
+                {{ paragraph }}
               </p>
             </div>
           </div>
@@ -221,14 +213,14 @@ const socials = computed(() => [
     <section id="section-releases" class="flex flex-col gap-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="text-2xl font-semibold">Releases</h2>
-          <p class="text-sm text-muted">Spotify embeds · Updated hourly</p>
+          <h2 class="text-2xl font-semibold">{{ t('section.releasesTitle') }}</h2>
+          <p class="text-sm text-muted">{{ t('section.releasesSubtitle') }}</p>
         </div>
-        <UBadge color="neutral" variant="subtle">Latest drops</UBadge>
+        <UBadge color="neutral" variant="subtle">{{ t('badges.latestDrops') }}</UBadge>
       </div>
 
       <div v-if="error" class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">
-        Unable to load releases right now.
+        {{ t('errors.releases') }}
       </div>
 
       <div v-else>
@@ -259,14 +251,14 @@ const socials = computed(() => [
     <section id="section-videos" class="flex flex-col gap-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="text-2xl font-semibold">Videos</h2>
-          <p class="text-sm text-muted">YouTube embeds · Updated hourly</p>
+          <h2 class="text-2xl font-semibold">{{ t('section.videosTitle') }}</h2>
+          <p class="text-sm text-muted">{{ t('section.videosSubtitle') }}</p>
         </div>
-        <UBadge color="neutral" variant="subtle">Latest clips</UBadge>
+        <UBadge color="neutral" variant="subtle">{{ t('badges.latestClips') }}</UBadge>
       </div>
 
       <div v-if="error" class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">
-        Unable to load videos right now.
+        {{ t('errors.videos') }}
       </div>
 
       <div v-else>
@@ -295,11 +287,11 @@ const socials = computed(() => [
     </section>
 
     <div v-if="updatedAt" class="text-xs text-muted">
-      Feed refreshed: {{ updatedAt }}
+      {{ t('status.feedRefreshed') }} {{ updatedAt }}
     </div>
 
     <section id="section-contact" class="flex flex-col gap-4">
-      <h2 class="text-2xl font-semibold">Contact</h2>
+      <h2 class="text-2xl font-semibold">{{ t('section.contactTitle') }}</h2>
       <div class="flex flex-wrap gap-3">
         <UButton
           v-for="social in socials"
@@ -315,7 +307,7 @@ const socials = computed(() => [
     </section>
 
     <div v-if="pending" class="text-sm text-muted">
-      Loading the latest feed…
+      {{ t('status.loading') }}
     </div>
   </main>
 </template>

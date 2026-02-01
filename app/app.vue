@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 useHead({
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -13,6 +13,8 @@ useHead({
 
 const title = 'Musician Timeline'
 const description = 'A living landing page that connects Spotify and YouTube into one immersive timeline.'
+
+const { locale, locales, t } = useTranslations()
 
 const socialLinks = [
   {
@@ -72,10 +74,18 @@ useSeoMeta({
         <div class="relative mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <AppLogo size="56" class="w-auto text-highlighted" />
           <nav class="flex flex-wrap items-center justify-center gap-4 text-sm font-semibold text-muted">
-            <a href="#section-about" class="transition hover:text-highlighted">About</a>
-            <a href="#section-releases" class="transition hover:text-highlighted">Releases</a>
-            <a href="#section-videos" class="transition hover:text-highlighted">Videos</a>
-            <a href="#section-contact" class="transition hover:text-highlighted">Contact</a>
+            <a href="#section-about" class="transition hover:text-highlighted">
+              {{ t('nav.about') }}
+            </a>
+            <a href="#section-releases" class="transition hover:text-highlighted">
+              {{ t('nav.releases') }}
+            </a>
+            <a href="#section-videos" class="transition hover:text-highlighted">
+              {{ t('nav.videos') }}
+            </a>
+            <a href="#section-contact" class="transition hover:text-highlighted">
+              {{ t('nav.contact') }}
+            </a>
           </nav>
           <div class="flex flex-wrap items-center justify-center gap-2">
             <UButton
@@ -95,6 +105,26 @@ useSeoMeta({
       </header>
 
       <NuxtPage />
+
+      <footer class="border-t border-default bg-background/80">
+        <div class="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-4 py-6 text-sm text-muted sm:flex-row sm:px-6">
+          <div>
+            © {{ new Date().getFullYear() }} {{ locale === 'en' ? 'All rights reserved.' : 'Todos los derechos reservados.' }}
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs uppercase tracking-wide text-muted">
+              {{ locale === 'en' ? 'Language' : 'Idioma' }}
+            </span>
+            <ULocaleSelect
+              :model-value="locale"
+              :locales="locales"
+              size="sm"
+              class="min-w-[140px]"
+              @update:model-value="locale = $event"
+            />
+          </div>
+        </div>
+      </footer>
     </div>
   </UApp>
 </template>
