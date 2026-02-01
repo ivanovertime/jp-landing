@@ -38,7 +38,15 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
 
   const spotifyArtist = await fetchSpotifyArtist(spotifyConfig)
 
-  items.sort((a, b) => {
+  const nowIso = new Date().toISOString()
+  const normalizedItems = items
+    .filter((item): item is FeedItem => Boolean(item && item.id && item.embedUrl))
+    .map((item) => ({
+      ...item,
+      date: item.date || nowIso
+    }))
+
+  normalizedItems.sort((a, b) => {
     const aTime = a.date ? new Date(a.date).getTime() : 0
     const bTime = b.date ? new Date(b.date).getTime() : 0
     return bTime - aTime
@@ -46,7 +54,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
 
   return {
     updatedAt: new Date().toISOString(),
-    items,
+    items: normalizedItems,
     artist: spotifyArtist || undefined
   }
 })

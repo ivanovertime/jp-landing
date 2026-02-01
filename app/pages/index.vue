@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ChangelogVersionProps } from '@nuxt/ui'
 type FeedItem = {
   id: string
   provider: 'youtube' | 'spotify'
@@ -24,7 +25,12 @@ type FeedResponse = {
 }
 
 const { data: feed, pending, error } = await useFetch<FeedResponse>('/api/feed', {
-  key: 'feed'
+  key: 'feed',
+  default: () => ({
+    updatedAt: '',
+    items: [],
+    artist: undefined
+  })
 })
 
 const items = computed(() => feed.value?.items ?? [])
@@ -40,6 +46,77 @@ const artist = computed(() => feed.value?.artist ?? null)
 
 const releases = computed(() => items.value.filter(item => item.provider === 'spotify'))
 const videos = computed(() => items.value.filter(item => item.provider === 'youtube'))
+
+type MediaVersion = ChangelogVersionProps & { item: FeedItem }
+
+const releaseVersions = computed<MediaVersion[]>(() =>
+  releases.value
+    .filter((item): item is FeedItem => Boolean(item))
+    .map(item => ({
+      // title: item.title || 'Latest track',
+      // description: `${item.provider} · ${item.type}`,
+      date: item.date || feed.value?.updatedAt || new Date().toISOString(),
+      // badge: 'Release',
+      item,
+      ui: {
+        container: 'max-w-none'
+      }
+    }))
+)
+
+const videoVersions = computed<MediaVersion[]>(() =>
+  videos.value
+    .filter((item): item is FeedItem => Boolean(item))
+    .map(item => ({
+      // title: item.title || 'Latest video',
+      // description: `${item.provider} · ${item.type}`,
+      date: item.date || feed.value?.updatedAt || new Date().toISOString(),
+      // badge: 'Video',
+      item,
+      ui: {
+        container: 'max-w-none'
+      }
+    }))
+)
+
+const socials = computed(() => [
+  {
+    label: 'Instagram',
+    icon: 'i-simple-icons-instagram',
+    to: 'https://www.instagram.com/',
+    target: '_blank'
+  },
+  {
+    label: 'YouTube',
+    icon: 'i-simple-icons-youtube',
+    to: 'https://www.youtube.com/c/JpJheyPi/',
+    target: '_blank'
+  },
+  {
+    label: 'Facebook',
+    icon: 'i-simple-icons-facebook',
+    to: 'https://www.facebook.com/',
+    target: '_blank'
+  },
+  {
+    label: 'X',
+    icon: 'i-simple-icons-x',
+    to: 'https://x.com/',
+    target: '_blank'
+  },
+  {
+    label: 'TikTok',
+    icon: 'i-simple-icons-tiktok',
+    to: 'https://www.tiktok.com/',
+    target: '_blank'
+  },
+  {
+    label: 'Spotify',
+    icon: 'i-simple-icons-spotify',
+    to: artist.value?.url || 'https://open.spotify.com/artist/12TET0GvQuCAO3O1tfwrf4',
+    target: '_blank'
+  }
+])
 
 </script>
 
@@ -107,26 +184,14 @@ const videos = computed(() => items.value.filter(item => item.provider === 'yout
         Unable to load releases right now.
       </div>
 
-      <div v-else class="grid gap-8 lg:grid-cols-2">
-        <UCard
-          v-for="item in releases"
-          :key="item.id"
-          :ui="{ body: 'flex flex-col gap-4', header: 'flex flex-col gap-1' }"
-        >
-          <template #header>
-            <div class="text-xs font-semibold uppercase tracking-wide text-muted">
-              {{ item.provider }} · {{ item.type }}
-            </div>
-            <div class="text-lg font-semibold text-highlighted">
-              {{ item.title || 'Latest track' }}
-            </div>
-            <div v-if="item.date" class="text-xs text-muted">
-              {{ new Date(item.date).toLocaleDateString() }}
+      <div v-else>
+        <UChangelogVersions :indicator-motion="{ damping: 26, restDelta: 0.001 }" :versions="releaseVersions">
+          <template #body="{ version }">
+            <div class="mt-6">
+              <EmbedFrame :item="version.item" />
             </div>
           </template>
-
-          <EmbedFrame :item="item" />
-        </UCard>
+        </UChangelogVersions>
       </div>
     </section>
 
@@ -143,26 +208,14 @@ const videos = computed(() => items.value.filter(item => item.provider === 'yout
         Unable to load videos right now.
       </div>
 
-      <div v-else class="grid gap-8 lg:grid-cols-2">
-        <UCard
-          v-for="item in videos"
-          :key="item.id"
-          :ui="{ body: 'flex flex-col gap-4', header: 'flex flex-col gap-1' }"
-        >
-          <template #header>
-            <div class="text-xs font-semibold uppercase tracking-wide text-muted">
-              {{ item.provider }} · {{ item.type }}
-            </div>
-            <div class="text-lg font-semibold text-highlighted">
-              {{ item.title || 'Latest video' }}
-            </div>
-            <div v-if="item.date" class="text-xs text-muted">
-              {{ new Date(item.date).toLocaleDateString() }}
+      <div v-else>
+        <UChangelogVersions :indicator-motion="{ damping: 26, restDelta: 0.001 }" :versions="videoVersions">
+          <template #body="{ version }">
+            <div class="mt-6">
+              <EmbedFrame :item="version.item" />
             </div>
           </template>
-
-          <EmbedFrame :item="item" />
-        </UCard>
+        </UChangelogVersions>
       </div>
     </section>
 
