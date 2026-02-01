@@ -41,20 +41,6 @@ const artist = computed(() => feed.value?.artist ?? null)
 const releases = computed(() => items.value.filter(item => item.provider === 'spotify'))
 const videos = computed(() => items.value.filter(item => item.provider === 'youtube'))
 
-const socials = computed(() => [
-  {
-    label: 'Spotify',
-    icon: 'i-simple-icons-spotify',
-    to: artist.value?.url || 'https://open.spotify.com/artist/12TET0GvQuCAO3O1tfwrf4',
-    target: '_blank'
-  },
-  {
-    label: 'YouTube',
-    icon: 'i-simple-icons-youtube',
-    to: 'https://www.youtube.com/c/JpJheyPi/',
-    target: '_blank'
-  }
-])
 </script>
 
 <template>
@@ -105,19 +91,6 @@ const socials = computed(() => [
           </UCard>
         </div>
 
-        <div class="flex flex-wrap gap-3">
-          <UButton
-            v-for="social in socials"
-            :key="social.label"
-            :icon="social.icon"
-            :to="social.to"
-            :target="social.target"
-            variant="outline"
-            size="lg"
-          >
-            {{ social.label }}
-          </UButton>
-        </div>
       </div>
     </section>
 
