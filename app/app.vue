@@ -20,33 +20,33 @@ const socialLinks = [
   {
     label: 'Instagram',
     icon: 'i-simple-icons-instagram',
-    to: 'https://www.instagram.com/',
+    to: 'https://www.instagram.com/jpoficial_10',
     target: '_blank'
   },
   {
     label: 'YouTube',
     icon: 'i-simple-icons-youtube',
-    to: 'https://www.youtube.com/c/JpJheyPi/',
+    to: 'https://www.youtube.com/c/JpJheyPi/featured',
     target: '_blank'
   },
   {
     label: 'Facebook',
     icon: 'i-simple-icons-facebook',
-    to: 'https://www.facebook.com/',
+    to: 'https://www.facebook.com/juanmanuelparrabu',
     target: '_blank'
   },
   {
     label: 'X',
     icon: 'i-simple-icons-x',
-    to: 'https://x.com/',
+    to: 'https://twitter.com/jpoficial_10',
     target: '_blank'
   },
-  {
-    label: 'TikTok',
-    icon: 'i-simple-icons-tiktok',
-    to: 'https://www.tiktok.com/',
-    target: '_blank'
-  },
+  // {
+  //   label: 'TikTok',
+  //   icon: 'i-simple-icons-tiktok',
+  //   to: 'https://www.tiktok.com/',
+  //   target: '_blank'
+  // },
   {
     label: 'Spotify',
     icon: 'i-simple-icons-spotify',

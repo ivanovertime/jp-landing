@@ -114,39 +114,21 @@ const videoVersions = computed<MediaVersion[]>(() =>
 
 const socials = computed(() => [
   {
-    label: 'Instagram',
-    icon: 'i-simple-icons-instagram',
-    to: 'https://www.instagram.com/',
-    target: '_blank'
-  },
-  {
     label: 'YouTube',
     icon: 'i-simple-icons-youtube',
-    to: 'https://www.youtube.com/c/JpJheyPi/',
+    to: 'https://www.youtube.com/c/JpJheyPi/featured',
     target: '_blank'
   },
   {
     label: 'Facebook',
     icon: 'i-simple-icons-facebook',
-    to: 'https://www.facebook.com/',
+    to: 'https://www.facebook.com/juanmanuelparrabu',
     target: '_blank'
   },
   {
     label: 'X',
     icon: 'i-simple-icons-x',
-    to: 'https://x.com/',
-    target: '_blank'
-  },
-  {
-    label: 'TikTok',
-    icon: 'i-simple-icons-tiktok',
-    to: 'https://www.tiktok.com/',
-    target: '_blank'
-  },
-  {
-    label: 'Spotify',
-    icon: 'i-simple-icons-spotify',
-    to: artist.value?.url || 'https://open.spotify.com/artist/12TET0GvQuCAO3O1tfwrf4',
+    to: 'https://twitter.com/jpoficial_10',
     target: '_blank'
   }
 ])
