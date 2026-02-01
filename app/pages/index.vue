@@ -242,6 +242,7 @@ const socials = computed(() => [
             :total="releases.length"
             :items-per-page="releasesPerPage"
             size="sm"
+            :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
             @update:page="releasesPage = $event"
           />
         </div>
@@ -280,6 +281,7 @@ const socials = computed(() => [
             :total="videos.length"
             :items-per-page="videosPerPage"
             size="sm"
+            :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
             @update:page="videosPage = $event"
           />
         </div>
