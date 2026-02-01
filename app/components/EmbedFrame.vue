@@ -22,7 +22,11 @@ const wrapperStyle = computed(() => {
   }
 
   if (props.item.height) {
-    style.height = props.item.height
+      if (props.item.provider === 'spotify') {
+        style.height = 'clamp(152px, 40vw, 200px)'
+      } else {
+        style.height = props.item.height
+      }
   }
 
   return style
