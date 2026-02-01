@@ -16,14 +16,22 @@ type FeedResponse = {
 }
 
 export default defineEventHandler(async (event): Promise<FeedResponse> => {
-  setHeader(event, 'Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=600')
+  if (process.dev) {
+    setHeader(event, 'Cache-Control', 'no-store')
+  } else {
+    setHeader(event, 'Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=600')
+  }
 
   const config = useRuntimeConfig()
   const items: FeedItem[] = []
+  const query = getQuery(event)
+  const maxYoutubeItems = Number(query.youtubeLimit || config.maxYoutubeItems || 24)
+  const maxSpotifyItems = Number(query.spotifyLimit || config.maxSpotifyItems || 24)
 
   const youtubeItems = await fetchYouTubeItems({
     channelUrl: config.youtubeChannelUrl,
-    channelId: config.youtubeChannelId
+    channelId: config.youtubeChannelId,
+    limit: maxYoutubeItems
   })
   items.push(...youtubeItems)
 
@@ -33,7 +41,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
     artistId: config.spotifyArtistId
   }
 
-  const spotifyItems = await fetchSpotifyItems(spotifyConfig)
+  const spotifyItems = await fetchSpotifyItems(spotifyConfig, maxSpotifyItems)
   items.push(...spotifyItems)
 
   const spotifyArtist = await fetchSpotifyArtist(spotifyConfig)
@@ -62,9 +70,10 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
 type YouTubeConfig = {
   channelUrl: string
   channelId?: string
+  limit?: number
 }
 
-async function fetchYouTubeItems({ channelUrl, channelId }: YouTubeConfig): Promise<FeedItem[]> {
+async function fetchYouTubeItems({ channelUrl, channelId, limit = 24 }: YouTubeConfig): Promise<FeedItem[]> {
   try {
     const resolvedChannelId = channelId || await resolveYouTubeChannelId(channelUrl)
     if (!resolvedChannelId) {
@@ -73,7 +82,7 @@ async function fetchYouTubeItems({ channelUrl, channelId }: YouTubeConfig): Prom
 
     const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${resolvedChannelId}`
     const xml = await $fetch<string>(feedUrl, { responseType: 'text' })
-    const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].slice(0, 4)
+    const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].slice(0, limit)
 
     return entries.map((match) => {
       const entry = match[1] ?? ''
@@ -175,31 +184,56 @@ type SpotifyTopTracksResponse = {
   }[]
 }
 
-async function fetchSpotifyItems({ clientId, clientSecret, artistId }: SpotifyConfig): Promise<FeedItem[]> {
+type SpotifyAlbumsResponse = {
+  items: {
+    id: string
+    name: string
+    release_date: string
+  }[]
+  next: string | null
+}
+
+async function fetchSpotifyItems({ clientId, clientSecret, artistId }: SpotifyConfig, limit = 24): Promise<FeedItem[]> {
   if (!clientId || !clientSecret || !artistId) {
     return []
   }
 
   try {
     const token = await fetchSpotifyToken(clientId, clientSecret)
-    const topTracks = await $fetch<SpotifyTopTracksResponse>(
-      `https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    )
+    const releases: FeedItem[] = []
+    let offset = 0
+    const pageSize = 20
 
-    return topTracks.tracks.slice(0, 3).map((track) => ({
-      id: `sp_${track.id}`,
-      provider: 'spotify',
-      type: 'track',
-      embedUrl: `https://open.spotify.com/embed/track/${track.id}`,
-      height: '152px',
-      title: track.name,
-      date: track.album.release_date
-    }))
+    while (releases.length < limit) {
+      const albums = await $fetch<SpotifyAlbumsResponse>(
+        `https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=album,single&market=US&limit=${pageSize}&offset=${offset}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      releases.push(
+        ...albums.items.map((album) => ({
+          id: `sp_${album.id}`,
+          provider: 'spotify',
+          type: 'album',
+          embedUrl: `https://open.spotify.com/embed/album/${album.id}`,
+          height: '152px',
+          title: album.name,
+          date: album.release_date
+        }))
+      )
+
+      if (!albums.next || albums.items.length === 0) {
+        break
+      }
+
+      offset += pageSize
+    }
+
+    return releases.slice(0, limit)
   } catch {
     return []
   }

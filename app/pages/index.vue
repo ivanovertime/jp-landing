@@ -47,10 +47,40 @@ const artist = computed(() => feed.value?.artist ?? null)
 const releases = computed(() => items.value.filter(item => item.provider === 'spotify'))
 const videos = computed(() => items.value.filter(item => item.provider === 'youtube'))
 
+const releasesPage = ref(1)
+const videosPage = ref(1)
+const releasesPerPage = 6
+const videosPerPage = 6
+
+const releasePageCount = computed(() => Math.max(1, Math.ceil(releases.value.length / releasesPerPage)))
+const videoPageCount = computed(() => Math.max(1, Math.ceil(videos.value.length / videosPerPage)))
+
+watchEffect(() => {
+  if (releasesPage.value > releasePageCount.value) {
+    releasesPage.value = releasePageCount.value
+  }
+})
+
+watchEffect(() => {
+  if (videosPage.value > videoPageCount.value) {
+    videosPage.value = videoPageCount.value
+  }
+})
+
+const pagedReleases = computed(() => {
+  const start = (releasesPage.value - 1) * releasesPerPage
+  return releases.value.slice(start, start + releasesPerPage)
+})
+
+const pagedVideos = computed(() => {
+  const start = (videosPage.value - 1) * videosPerPage
+  return videos.value.slice(start, start + videosPerPage)
+})
+
 type MediaVersion = ChangelogVersionProps & { item: FeedItem }
 
 const releaseVersions = computed<MediaVersion[]>(() =>
-  releases.value
+  pagedReleases.value
     .filter((item): item is FeedItem => Boolean(item))
     .map(item => ({
       // title: item.title || 'Latest track',
@@ -65,7 +95,7 @@ const releaseVersions = computed<MediaVersion[]>(() =>
 )
 
 const videoVersions = computed<MediaVersion[]>(() =>
-  videos.value
+  pagedVideos.value
     .filter((item): item is FeedItem => Boolean(item))
     .map(item => ({
       // title: item.title || 'Latest video',
@@ -185,13 +215,27 @@ const socials = computed(() => [
       </div>
 
       <div v-else>
-        <UChangelogVersions :indicator-motion="{ damping: 26, restDelta: 0.001 }" :versions="releaseVersions">
+        <UChangelogVersions
+          :key="releasesPage"
+          :indicator-motion="{ damping: 26, restDelta: 0.001 }"
+          :versions="releaseVersions"
+        >
           <template #body="{ version }">
             <div class="mt-6">
               <EmbedFrame :item="version.item" />
             </div>
           </template>
         </UChangelogVersions>
+
+        <div v-if="releasePageCount > 1" class="mt-6 flex justify-center">
+          <UPagination
+            :page="releasesPage"
+            :total="releases.length"
+            :items-per-page="releasesPerPage"
+            size="sm"
+            @update:page="releasesPage = $event"
+          />
+        </div>
       </div>
     </section>
 
@@ -209,13 +253,27 @@ const socials = computed(() => [
       </div>
 
       <div v-else>
-        <UChangelogVersions :indicator-motion="{ damping: 26, restDelta: 0.001 }" :versions="videoVersions">
+        <UChangelogVersions
+          :key="videosPage"
+          :indicator-motion="{ damping: 26, restDelta: 0.001 }"
+          :versions="videoVersions"
+        >
           <template #body="{ version }">
             <div class="mt-6">
               <EmbedFrame :item="version.item" />
             </div>
           </template>
         </UChangelogVersions>
+
+        <div v-if="videoPageCount > 1" class="mt-6 flex justify-center">
+          <UPagination
+            :page="videosPage"
+            :total="videos.length"
+            :items-per-page="videosPerPage"
+            size="sm"
+            @update:page="videosPage = $event"
+          />
+        </div>
       </div>
     </section>
 
