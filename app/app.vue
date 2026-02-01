@@ -72,9 +72,9 @@ useSeoMeta({
         <div class="relative mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <AppLogo size="56" class="w-auto text-highlighted" />
           <nav class="flex flex-wrap items-center justify-center gap-4 text-sm font-semibold text-muted">
+            <a href="#section-about" class="transition hover:text-highlighted">About</a>
             <a href="#section-releases" class="transition hover:text-highlighted">Releases</a>
             <a href="#section-videos" class="transition hover:text-highlighted">Videos</a>
-            <a href="#section-about" class="transition hover:text-highlighted">About</a>
             <a href="#section-contact" class="transition hover:text-highlighted">Contact</a>
           </nav>
           <div class="flex flex-wrap items-center justify-center gap-2">

@@ -152,34 +152,52 @@ const socials = computed(() => [
 
 <template>
   <main class="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-12 sm:px-6 sm:py-20 lg:gap-20">
-    <section class="flex flex-col gap-8">
+    <section id="section-about" class="flex flex-col gap-8">
       <div class="flex flex-col gap-6">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          <div class="flex flex-col gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-6">
+          <div class="flex flex-col gap-4">
             <UBadge color="primary" variant="subtle" class="w-fit">
               Official artist page
             </UBadge>
             <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
               {{ artist?.name || 'Jhey Pi' }}
             </h1>
-            <p class="max-w-2xl text-base text-muted sm:text-lg">
-              Music, videos, and releases in one place. Stream the latest tracks and watch new drops
-              without leaving the page.
-            </p>
+            <div class="max-w-2xl text-sm text-muted sm:text-base">
+              <p>
+                Jhey Pi es un artista urbano emergente venezolano basado en EE.UU., con más de 1Millon
+                de seguidores orgánicos en sus redes sociales y un sonido melódico que conecta con
+                audiencias jóvenes latinas.
+              </p>
+              <p class="mt-4">
+                Su más reciente lanzamiento “Making LUV” está mostrando momentum notable: más de
+                10.000 streams solo en España en los primeros 15 días, guardados altos y repetición
+                orgánica.
+              </p>
+              <p class="mt-4">
+                Con influencias de Duki, Milo J y la nueva ola latina, Jhey Pi mezcla trap suave, vibra
+                callejera elegante y letras con identidad propia.
+              </p>
+              <p class="mt-4">
+                Todo su crecimiento ha sido sin disquera, impulsado por estrategia, contenido y
+                comunidad real.
+              </p>
+            </div>
           </div>
 
           <UCard
             v-if="artist"
             class="w-full max-w-sm"
-            :ui="{ body: 'flex flex-col gap-3' }"
+            :ui="{ body: 'flex flex-col gap-4' }"
           >
-            <div class="flex items-center gap-3">
-              <img
-                v-if="artist.images?.[0]"
-                :src="artist.images[0].url"
-                :alt="artist.name"
-                class="h-14 w-14 rounded-full object-cover"
-              >
+            <div class="flex items-center gap-4">
+              <div class="h-24 w-24 overflow-hidden rounded-full ring-2 ring-primary/40 shadow-lg">
+                <img
+                  v-if="artist.images?.[0]"
+                  :src="artist.images[0].url"
+                  :alt="artist.name"
+                  class="h-full w-full object-cover"
+                >
+              </div>
               <div>
                 <div class="text-sm font-semibold text-highlighted">Spotify</div>
                 <div class="text-xs text-muted">{{ artist.followers.toLocaleString() }} followers</div>
@@ -197,7 +215,6 @@ const socials = computed(() => [
             </div>
           </UCard>
         </div>
-
       </div>
     </section>
 
@@ -277,16 +294,9 @@ const socials = computed(() => [
       </div>
     </section>
 
-    <section id="section-about" class="flex flex-col gap-4">
-      <h2 class="text-2xl font-semibold">About</h2>
-      <p class="max-w-3xl text-sm text-muted sm:text-base">
-        {{ artist?.name || 'Jhey Pi' }} blends melodic storytelling with modern Latin rhythms. This page
-        brings together official Spotify and YouTube releases, updated automatically every hour.
-      </p>
-      <div v-if="updatedAt" class="text-xs text-muted">
-        Feed refreshed: {{ updatedAt }}
-      </div>
-    </section>
+    <div v-if="updatedAt" class="text-xs text-muted">
+      Feed refreshed: {{ updatedAt }}
+    </div>
 
     <section id="section-contact" class="flex flex-col gap-4">
       <h2 class="text-2xl font-semibold">Contact</h2>
