@@ -81,6 +81,30 @@ const pagedVideos = computed(() => {
   return videos.value.slice(start, start + videosPerPage)
 })
 
+const contactForm = reactive({
+  name: '',
+  email: '',
+  message: ''
+})
+
+const mailtoHref = computed(() => {
+  const subject = 'Colaboración con Jhey Pi'
+  const body = [
+    `Nombre: ${contactForm.name || '-'}`,
+    `Email: ${contactForm.email || '-'}`,
+    '',
+    contactForm.message || ''
+  ].join('\n')
+
+  return `mailto:jp10.manager@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+})
+
+const handleContactSubmit = () => {
+  if (import.meta.client) {
+    window.location.href = mailtoHref.value
+  }
+}
+
 type MediaVersion = ChangelogVersionProps & { item: FeedItem }
 
 const releaseVersions = computed<MediaVersion[]>(() =>
@@ -112,27 +136,6 @@ const videoVersions = computed<MediaVersion[]>(() =>
       }
     }))
 )
-
-const socials = computed(() => [
-  {
-    label: 'YouTube',
-    icon: 'i-simple-icons-youtube',
-    to: 'https://www.youtube.com/c/JpJheyPi/featured',
-    target: '_blank'
-  },
-  {
-    label: 'Facebook',
-    icon: 'i-simple-icons-facebook',
-    to: 'https://www.facebook.com/juanmanuelparrabu',
-    target: '_blank'
-  },
-  {
-    label: 'X',
-    icon: 'i-simple-icons-x',
-    to: 'https://twitter.com/jpoficial_10',
-    target: '_blank'
-  }
-])
 </script>
 
 <template>
@@ -306,7 +309,83 @@ const socials = computed(() => [
       <h2 class="text-2xl font-semibold">
         {{ t('section.contactTitle') }}
       </h2>
-      <div class="flex flex-wrap gap-3">
+      <p class="max-w-3xl text-sm text-muted">
+        {{ t('contactForm.intro').split('{instagram}')[0] }}
+        <a
+          href="https://instagram.com/mediaviarecords"
+          target="_blank"
+          rel="noreferrer"
+          class="font-semibold text-primary hover:underline"
+        >Mediavia Records</a>
+        {{ t('contactForm.intro').split('{instagram}')[1].split('{email}')[0] }}
+        <a
+          href="mailto:jp10.manager@gmail.com"
+          class="font-semibold text-primary hover:underline"
+        >jp10.manager@gmail.com</a>
+        {{ t('contactForm.intro').split('{email}')[1] }}
+      </p>
+      <UForm
+        :state="contactForm"
+        class="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:grid-cols-2"
+        @submit="handleContactSubmit"
+      >
+        <UFormGroup
+          :label="t('contactForm.nameLabel')"
+          class="text-sm"
+        >
+          <UInput
+            v-model="contactForm.name"
+            name="name"
+            size="lg"
+            :placeholder="t('contactForm.namePlaceholder')"
+            class="w-full"
+          />
+        </UFormGroup>
+        <UFormGroup
+          :label="t('contactForm.emailLabel')"
+          class="text-sm"
+        >
+          <UInput
+            v-model="contactForm.email"
+            name="email"
+            type="email"
+            size="lg"
+            required
+            :placeholder="t('contactForm.emailPlaceholder')"
+            class="w-full"
+          />
+        </UFormGroup>
+        <UFormGroup
+          :label="t('contactForm.messageLabel')"
+          class="text-sm sm:col-span-2"
+        >
+          <UTextarea
+            v-model="contactForm.message"
+            name="message"
+            size="lg"
+            :rows="4"
+            required
+            :placeholder="t('contactForm.messagePlaceholder')"
+            class="w-full"
+          />
+        </UFormGroup>
+        <div class="flex flex-wrap items-center gap-3 sm:col-span-2">
+          <UButton
+            type="submit"
+            size="lg"
+            color="primary"
+            variant="solid"
+            icon="i-heroicons-envelope"
+            class="w-full sm:w-auto bg-gradient-to-r from-primary via-primary to-primary/80 shadow-lg shadow-primary/30 transition hover:-translate-y-0.5 hover:shadow-primary/50"
+          >
+            {{ t('contactForm.submit') }}
+          </UButton>
+          <span class="text-xs text-muted">
+            {{ t('contactForm.hint') }}
+          </span>
+        </div>
+      </UForm>
+      <!-- <div class="flex flex-wrap gap-3">
         <UButton
           v-for="social in socials"
           :key="social.label"
@@ -317,7 +396,7 @@ const socials = computed(() => [
         >
           {{ social.label }}
         </UButton>
-      </div>
+      </div> -->
     </section>
 
     <div
