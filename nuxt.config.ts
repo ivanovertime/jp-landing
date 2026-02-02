@@ -52,11 +52,15 @@ export default defineNuxtConfig({
   },
   srcDir: 'app',
 
+  nitro: {
+    preset: 'cloudflare-pages'
+  },
+
   routeRules: isProd
     ? {
-        '/': { prerender: true, isr: 3600 },
-        '/api/feed': { cache: { maxAge: 3600, staleMaxAge: 600 } }
-      }
+      '/': { prerender: true, isr: 3600 },
+      '/api/feed': { cache: { maxAge: 3600, staleMaxAge: 600 } }
+    }
     : {},
 
   compatibilityDate: '2025-01-15',
