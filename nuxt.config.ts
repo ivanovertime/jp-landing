@@ -1,11 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = !import.meta.dev
 
 export default defineNuxtConfig({
-  srcDir: 'app',
-  dir: {
-    public: '../public'
-  },
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
@@ -15,27 +11,7 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true
   },
-
   css: ['~/assets/css/main.css'],
-
-  vite: {
-    plugins: [
-      {
-        name: 'nuxt-assets-root-guard',
-        configureServer(server) {
-          server.middlewares.use('/_nuxt', (req, res, next) => {
-            if (!req.url || req.url === '/' || req.url === '') {
-              res.statusCode = 204
-              res.end()
-              return
-            }
-
-            next()
-          })
-        }
-      }
-    ]
-  },
 
   mdc: {
     highlight: {
@@ -71,6 +47,10 @@ export default defineNuxtConfig({
       maxSpotifyItems: env.MAX_SPOTIFY_ITEMS || '24'
     }
   })(),
+  dir: {
+    public: '../public'
+  },
+  srcDir: 'app',
 
   routeRules: isProd
     ? {
@@ -80,6 +60,26 @@ export default defineNuxtConfig({
     : {},
 
   compatibilityDate: '2025-01-15',
+
+  vite: {
+    plugins: [
+      {
+        name: 'nuxt-assets-root-guard',
+        configureServer(server) {
+          server.middlewares.use('/_nuxt', (req, res, next) => {
+            const requestUrl = (req as { url?: string }).url
+            if (!requestUrl || requestUrl === '/' || requestUrl === '') {
+              res.statusCode = 204
+              res.end()
+              return
+            }
+
+            next()
+          })
+        }
+      }
+    ]
+  },
 
   eslint: {
     config: {

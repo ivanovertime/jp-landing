@@ -6,12 +6,13 @@ withDefaults(
     height?: number | string
   }>(),
   {
-    size: 36,
+    size: 36
   }
 )
 </script>
 
 <template>
+  <!-- eslint-disable vue/max-attributes-per-line, vue/attributes-order, vue/html-indent, vue/first-attribute-linebreak, vue/html-closing-bracket-newline -->
   <svg
     version="1.1"
     id="svg1"
@@ -475,4 +476,5 @@ withDefaults(
       </g>
     </g>
   </svg>
+  <!-- eslint-enable vue/max-attributes-per-line, vue/attributes-order, vue/html-indent, vue/first-attribute-linebreak, vue/html-closing-bracket-newline -->
 </template>

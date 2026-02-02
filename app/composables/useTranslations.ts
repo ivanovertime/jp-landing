@@ -1,5 +1,12 @@
 type LocaleCode = 'es' | 'en'
 
+type UiLocale = {
+  code: LocaleCode
+  name: string
+  dir: 'ltr' | 'rtl'
+  messages: Messages
+}
+
 type Messages = {
   nav: {
     about: string
@@ -112,28 +119,32 @@ const messages: Record<LocaleCode, Messages> = {
 
 export function useTranslations() {
   const locale = useState<LocaleCode>('locale', () => 'es')
-  const locales = [
-    { code: 'es', name: 'Español' },
-    { code: 'en', name: 'English' }
+  const locales: UiLocale[] = [
+    { code: 'es', name: 'Español', dir: 'ltr', messages: messages.es },
+    { code: 'en', name: 'English', dir: 'ltr', messages: messages.en }
   ]
 
   const current = computed(() => messages[locale.value] || messages.es)
 
-  function t(path: string): string {
+  function resolvePath(path: string): unknown {
     const parts = path.split('.')
-    let value: any = current.value
+    let value: unknown = current.value
     for (const part of parts) {
-      value = value?.[part]
+      if (!value || typeof value !== 'object' || !(part in value)) {
+        return undefined
+      }
+      value = (value as Record<string, unknown>)[part]
     }
+    return value
+  }
+
+  function t(path: string): string {
+    const value = resolvePath(path)
     return typeof value === 'string' ? value : ''
   }
 
   function tArray(path: string): string[] {
-    const parts = path.split('.')
-    let value: any = current.value
-    for (const part of parts) {
-      value = value?.[part]
-    }
+    const value = resolvePath(path)
     return Array.isArray(value) ? value : []
   }
 

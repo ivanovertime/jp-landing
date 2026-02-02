@@ -16,7 +16,7 @@ type FeedResponse = {
 }
 
 export default defineEventHandler(async (event): Promise<FeedResponse> => {
-  if (process.dev) {
+  if (import.meta.dev) {
     setHeader(event, 'Cache-Control', 'no-store')
   } else {
     setHeader(event, 'Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=600')
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   const nowIso = new Date().toISOString()
   const normalizedItems = items
     .filter((item): item is FeedItem => Boolean(item && item.id && item.embedUrl))
-    .map((item) => ({
+    .map(item => ({
       ...item,
       date: item.date || nowIso
     }))
@@ -171,17 +171,7 @@ type SpotifyArtist = {
   url: string
   followers: number
   genres: string[]
-  images: { url: string; width: number | null; height: number | null }[]
-}
-
-type SpotifyTopTracksResponse = {
-  tracks: {
-    id: string
-    name: string
-    album: {
-      release_date: string
-    }
-  }[]
+  images: { url: string, width: number | null, height: number | null }[]
 }
 
 type SpotifyAlbumsResponse = {
@@ -215,7 +205,7 @@ async function fetchSpotifyItems({ clientId, clientSecret, artistId }: SpotifyCo
       )
 
       releases.push(
-        ...albums.items.map((album) => ({
+        ...albums.items.map<FeedItem>(album => ({
           id: `sp_${album.id}`,
           provider: 'spotify',
           type: 'album',
@@ -252,7 +242,7 @@ async function fetchSpotifyArtist({ clientId, clientSecret, artistId }: SpotifyC
       external_urls: { spotify: string }
       followers: { total: number }
       genres: string[]
-      images: { url: string; width: number | null; height: number | null }[]
+      images: { url: string, width: number | null, height: number | null }[]
     }>(`https://api.spotify.com/v1/artists/${artistId}`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -279,7 +269,7 @@ async function fetchSpotifyToken(clientId: string, clientSecret: string): Promis
   const response = await $fetch<SpotifyTokenResponse>('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: {
-      Authorization: `Basic ${credentials}`,
+      'Authorization': `Basic ${credentials}`,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     body

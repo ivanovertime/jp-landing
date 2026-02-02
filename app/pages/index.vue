@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ChangelogVersionProps } from '@nuxt/ui'
+
 type FeedItem = {
   id: string
   provider: 'youtube' | 'spotify'
@@ -20,7 +21,7 @@ type FeedResponse = {
     url: string
     followers: number
     genres: string[]
-    images: { url: string; width: number | null; height: number | null }[]
+    images: { url: string, width: number | null, height: number | null }[]
   }
 }
 
@@ -132,16 +133,22 @@ const socials = computed(() => [
     target: '_blank'
   }
 ])
-
 </script>
 
 <template>
   <main class="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-12 sm:px-6 sm:py-20 lg:gap-20">
-    <section id="section-about" class="flex flex-col gap-8">
+    <section
+      id="section-about"
+      class="flex flex-col gap-8"
+    >
       <div class="flex flex-col gap-6">
         <div class="flex flex-wrap items-center justify-between gap-6">
           <div class="flex flex-col gap-4">
-            <UBadge color="primary" variant="subtle" class="w-fit">
+            <UBadge
+              color="primary"
+              variant="subtle"
+              class="w-fit"
+            >
               {{ t('badges.official') }}
             </UBadge>
             <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
@@ -173,8 +180,12 @@ const socials = computed(() => [
                 >
               </div>
               <div>
-                <div class="text-sm font-semibold text-highlighted">Spotify</div>
-                <div class="text-xs text-muted">{{ artist.followers.toLocaleString() }} followers</div>
+                <div class="text-sm font-semibold text-highlighted">
+                  Spotify
+                </div>
+                <div class="text-xs text-muted">
+                  {{ artist.followers.toLocaleString() }} followers
+                </div>
               </div>
             </div>
             <div class="flex flex-wrap gap-2">
@@ -192,16 +203,31 @@ const socials = computed(() => [
       </div>
     </section>
 
-    <section id="section-releases" class="flex flex-col gap-6">
+    <section
+      id="section-releases"
+      class="flex flex-col gap-6"
+    >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="text-2xl font-semibold">{{ t('section.releasesTitle') }}</h2>
-          <p class="text-sm text-muted">{{ t('section.releasesSubtitle') }}</p>
+          <h2 class="text-2xl font-semibold">
+            {{ t('section.releasesTitle') }}
+          </h2>
+          <p class="text-sm text-muted">
+            {{ t('section.releasesSubtitle') }}
+          </p>
         </div>
-        <UBadge color="neutral" variant="subtle">{{ t('badges.latestDrops') }}</UBadge>
+        <UBadge
+          color="neutral"
+          variant="subtle"
+        >
+          {{ t('badges.latestDrops') }}
+        </UBadge>
       </div>
 
-      <div v-if="error" class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">
+      <div
+        v-if="error"
+        class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200"
+      >
         {{ t('errors.releases') }}
       </div>
 
@@ -218,7 +244,10 @@ const socials = computed(() => [
           </template>
         </UChangelogVersions>
 
-        <div v-if="releasePageCount > 1" class="mt-6 flex justify-center">
+        <div
+          v-if="releasePageCount > 1"
+          class="mt-6 flex justify-center"
+        >
           <UPagination
             :page="releasesPage"
             :total="releases.length"
@@ -231,16 +260,31 @@ const socials = computed(() => [
       </div>
     </section>
 
-    <section id="section-videos" class="flex flex-col gap-6">
+    <section
+      id="section-videos"
+      class="flex flex-col gap-6"
+    >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 class="text-2xl font-semibold">{{ t('section.videosTitle') }}</h2>
-          <p class="text-sm text-muted">{{ t('section.videosSubtitle') }}</p>
+          <h2 class="text-2xl font-semibold">
+            {{ t('section.videosTitle') }}
+          </h2>
+          <p class="text-sm text-muted">
+            {{ t('section.videosSubtitle') }}
+          </p>
         </div>
-        <UBadge color="neutral" variant="subtle">{{ t('badges.latestClips') }}</UBadge>
+        <UBadge
+          color="neutral"
+          variant="subtle"
+        >
+          {{ t('badges.latestClips') }}
+        </UBadge>
       </div>
 
-      <div v-if="error" class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">
+      <div
+        v-if="error"
+        class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200"
+      >
         {{ t('errors.videos') }}
       </div>
 
@@ -257,7 +301,10 @@ const socials = computed(() => [
           </template>
         </UChangelogVersions>
 
-        <div v-if="videoPageCount > 1" class="mt-6 flex justify-center">
+        <div
+          v-if="videoPageCount > 1"
+          class="mt-6 flex justify-center"
+        >
           <UPagination
             :page="videosPage"
             :total="videos.length"
@@ -270,12 +317,20 @@ const socials = computed(() => [
       </div>
     </section>
 
-    <div v-if="updatedAt" class="text-xs text-muted">
+    <div
+      v-if="updatedAt"
+      class="text-xs text-muted"
+    >
       {{ t('status.feedRefreshed') }} {{ updatedAt }}
     </div>
 
-    <section id="section-contact" class="flex flex-col gap-4">
-      <h2 class="text-2xl font-semibold">{{ t('section.contactTitle') }}</h2>
+    <section
+      id="section-contact"
+      class="flex flex-col gap-4"
+    >
+      <h2 class="text-2xl font-semibold">
+        {{ t('section.contactTitle') }}
+      </h2>
       <div class="flex flex-wrap gap-3">
         <UButton
           v-for="social in socials"
@@ -290,7 +345,10 @@ const socials = computed(() => [
       </div>
     </section>
 
-    <div v-if="pending" class="text-sm text-muted">
+    <div
+      v-if="pending"
+      class="text-sm text-muted"
+    >
       {{ t('status.loading') }}
     </div>
   </main>
