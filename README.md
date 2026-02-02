@@ -63,6 +63,26 @@ Preview locally:
 pnpm preview
 ```
 
+## Deploy to Cloudflare Pages
+
+This project is configured for Cloudflare Pages via the Nitro preset in
+[nuxt.config.ts](nuxt.config.ts).
+
+1. In Cloudflare Pages, create a new project and connect the repository.
+2. Build settings:
+	- Build command: `pnpm install --frozen-lockfile && pnpm build`
+	- Build output directory: `.output/public`
+3. Environment variables (Project → Settings → Environment Variables):
+	- `SPOTIFY_CLIENT_ID`
+	- `SPOTIFY_CLIENT_SECRET`
+	- `SPOTIFY_ARTIST_ID` (optional)
+	- `YOUTUBE_CHANNEL_URL`
+	- `YOUTUBE_CHANNEL_ID` (optional)
+	- `MAX_YOUTUBE_ITEMS` (optional)
+	- `MAX_SPOTIFY_ITEMS` (optional)
+	- `PNPM_VERSION` (recommended: `10.28.1`)
+4. Deploy.
+
 ## Project Notes
 
 - App source lives in `app/` with Nuxt `srcDir` set accordingly.
