@@ -153,25 +153,25 @@ const socials = computed(() => [
               >
             </div>
             <div class="flex flex-col gap-4">
-            <UBadge
-              color="primary"
-              variant="subtle"
-              class="w-fit"
-            >
-              {{ t('badges.official') }}
-            </UBadge>
-            <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
-              {{ artist?.name || 'Jhey Pi' }}
-            </h1>
-            <div class="max-w-2xl text-sm text-muted sm:text-base">
-              <p
-                v-for="(paragraph, index) in aboutCopy"
-                :key="paragraph"
-                :class="{ 'mt-4': index > 0 }"
+              <UBadge
+                color="primary"
+                variant="subtle"
+                class="w-fit"
               >
-                {{ paragraph }}
-              </p>
-            </div>
+                {{ t('badges.official') }}
+              </UBadge>
+              <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
+                {{ artist?.name || 'Jhey Pi' }}
+              </h1>
+              <div class="max-w-2xl text-sm text-muted sm:text-base">
+                <p
+                  v-for="(paragraph, index) in aboutCopy"
+                  :key="paragraph"
+                  :class="{ 'mt-4': index > 0 }"
+                >
+                  {{ paragraph }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
