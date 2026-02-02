@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const isProd = !import.meta.dev
+
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
@@ -9,7 +11,6 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true
   },
-
   css: ['~/assets/css/main.css'],
 
   mdc: {
@@ -33,11 +34,56 @@ export default defineNuxtConfig({
     }
   },
 
-  routeRules: {
-    '/': { prerender: true }
+  runtimeConfig: (() => {
+    const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {}
+
+    return {
+      spotifyClientId: env.SPOTIFY_CLIENT_ID || '',
+      spotifyClientSecret: env.SPOTIFY_CLIENT_SECRET || '',
+      spotifyArtistId: env.SPOTIFY_ARTIST_ID || '12TET0GvQuCAO3O1tfwrf4',
+      youtubeChannelUrl: env.YOUTUBE_CHANNEL_URL || 'https://www.youtube.com/c/JpJheyPi',
+      youtubeChannelId: env.YOUTUBE_CHANNEL_ID || '',
+      maxYoutubeItems: env.MAX_YOUTUBE_ITEMS || '24',
+      maxSpotifyItems: env.MAX_SPOTIFY_ITEMS || '24'
+    }
+  })(),
+  dir: {
+    public: '../public'
   },
+  srcDir: 'app',
+
+  routeRules: isProd
+    ? {
+        '/': { prerender: true, isr: 3600 },
+        '/api/feed': { cache: { maxAge: 3600, staleMaxAge: 600 } }
+      }
+    : {},
 
   compatibilityDate: '2025-01-15',
+
+  nitro: {
+    preset: 'cloudflare-pages'
+  },
+
+  vite: {
+    plugins: [
+      {
+        name: 'nuxt-assets-root-guard',
+        configureServer(server) {
+          server.middlewares.use('/_nuxt', (req, res, next) => {
+            const requestUrl = (req as { url?: string }).url
+            if (!requestUrl || requestUrl === '/' || requestUrl === '') {
+              res.statusCode = 204
+              res.end()
+              return
+            }
+
+            next()
+          })
+        }
+      }
+    ]
+  },
 
   eslint: {
     config: {
