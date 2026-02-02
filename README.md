@@ -1,52 +1,49 @@
-# Nuxt Changelog Template
+# JP Landing
 
-[![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+Official landing site for Jhey Pi. Built with Nuxt 4 + Nuxt UI, pulling the latest YouTube videos and Spotify releases into a single feed.
 
-Use this template to create your own changelog with [Nuxt UI](https://ui.nuxt.com).
+## Features
 
-- [Live demo](https://changelog-template.nuxt.dev/)
-- [Documentation](https://ui.nuxt.com/getting-started/installation/nuxt)
+- Spotify releases and artist profile via Spotify API
+- YouTube latest videos via channel feed
+- Auto-sorted, paginated feed with embeds
+- Bilingual copy (ES/EN)
+- ISR caching for the feed endpoint
 
-<a href="https://changelog-template.nuxt.dev/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/changelog-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/changelog-light.png">
-    <img alt="Nuxt Changelog Template" src="https://ui.nuxt.com/assets/templates/nuxt/changelog-light.png">
-  </picture>
-</a>
+## Requirements
 
-## Quick Start
-
-```bash [Terminal]
-npm create nuxt@latest -- -t github:nuxt-ui-templates/changelog
-```
-
-## Deploy your own
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=changelog&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fchangelog&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fchangelog-dark.png&demo-url=https%3A%2F%2Fchangelog-template.nuxt.dev%2F&demo-title=Nuxt%20Changelog%20Template&demo-description=A%20changelog%20template%20to%20display%20your%20repository%20releases%20notes%20from%20GitHub%20powered%20by%20Nuxt%20MDC.)
-
-## Config
-
-To customize the GitHub repository that the changelog fetches releases from, update the `repository` key in `app/app.config.ts`:
-
-```ts [app/app.config.ts]
-// app/app.config.ts
-export default defineAppConfig({
-  repository: 'nuxt/ui' // Change this to your GitHub repository (e.g., 'facebook/react')
-})
-```
+- Node.js 18+
+- pnpm (recommended)
 
 ## Setup
 
-Make sure to install the dependencies:
+Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-## Development Server
+Create a `.env` file (or set env vars in your host):
 
-Start the development server on `http://localhost:3000`:
+```bash
+SPOTIFY_CLIENT_ID=
+SPOTIFY_CLIENT_SECRET=
+SPOTIFY_ARTIST_ID=12TET0GvQuCAO3O1tfwrf4
+YOUTUBE_CHANNEL_URL=https://www.youtube.com/c/JpJheyPi
+YOUTUBE_CHANNEL_ID=
+MAX_YOUTUBE_ITEMS=24
+MAX_SPOTIFY_ITEMS=24
+```
+
+Notes:
+
+- `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` are required to load Spotify releases and artist info.
+- `SPOTIFY_ARTIST_ID` defaults to Jhey Pi if omitted.
+- Set `YOUTUBE_CHANNEL_ID` to avoid resolving it from the channel URL at runtime.
+
+## Development
+
+Run the dev server on `http://localhost:3000`:
 
 ```bash
 pnpm dev
@@ -54,20 +51,20 @@ pnpm dev
 
 ## Production
 
-Build the application for production:
+Build for production:
 
 ```bash
 pnpm build
 ```
 
-Locally preview production build:
+Preview locally:
 
 ```bash
 pnpm preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Project Notes
 
-## Renovate integration
-
-Install [Renovate GitHub app](https://github.com/apps/renovate/installations/select_target) on your repository and you are good to go.
+- App source lives in `app/` with Nuxt `srcDir` set accordingly.
+- Feed endpoint is in `server/api/feed.ts` and caches for 1 hour in production.
+- UI copy and locale strings live in `app/composables/useTranslations.ts`.
