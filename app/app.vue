@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Motion } from 'motion-v'
+import { Motion, easeOut } from 'motion-v'
 
 useHead({
   meta: [
@@ -24,13 +24,13 @@ const isMenuOpen = ref(false)
 const headerMotion = {
   initial: { opacity: 0, y: -12 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.3, ease: 'easeOut' }
+  transition: { duration: 0.3, ease: easeOut }
 }
 
 const footerMotion = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.3, ease: 'easeOut' }
+  transition: { duration: 0.3, ease: easeOut }
 }
 
 const navLinks = computed(() => [

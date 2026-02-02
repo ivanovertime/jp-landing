@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ChangelogVersionProps } from '@nuxt/ui'
 import { nextTick } from 'vue'
-import { Motion } from 'motion-v'
+import { Motion, easeOut } from 'motion-v'
 
 type FeedItem = {
   id: string
@@ -119,8 +119,20 @@ const contactForm = reactive({
 const sectionMotion = {
   initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.3, ease: 'easeOut' }
+  transition: { duration: 0.3, ease: easeOut }
 }
+
+const contactIntro = computed(() => {
+  const intro = t('contactForm.intro')
+  const [beforeInstagram, rest = ''] = intro.split('{instagram}')
+  const [betweenInstagramEmail, afterEmail = ''] = rest.split('{email}')
+
+  return {
+    beforeInstagram,
+    betweenInstagramEmail,
+    afterEmail
+  }
+})
 
 const mailtoHref = computed(() => {
   const subject = 'Colaboración con Jhey Pi'
@@ -353,19 +365,19 @@ const videoVersions = computed<MediaVersion[]>(() =>
         {{ t('section.contactTitle') }}
       </h2>
       <p class="max-w-3xl text-sm text-muted">
-        {{ t('contactForm.intro').split('{instagram}')[0] }}
+        {{ contactIntro.beforeInstagram }}
         <a
           href="https://instagram.com/mediaviarecords"
           target="_blank"
           rel="noreferrer"
           class="font-semibold text-primary hover:underline"
         >Mediavia Records</a>
-        {{ t('contactForm.intro').split('{instagram}')[1].split('{email}')[0] }}
+        {{ contactIntro.betweenInstagramEmail }}
         <a
           href="mailto:jp10.manager@gmail.com"
           class="font-semibold text-primary hover:underline"
         >jp10.manager@gmail.com</a>
-        {{ t('contactForm.intro').split('{email}')[1] }}
+        {{ contactIntro.afterEmail }}
       </p>
       <UForm
         :state="contactForm"
