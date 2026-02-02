@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ChangelogVersionProps } from '@nuxt/ui'
+import { Motion } from 'motion-v'
 
 type FeedItem = {
   id: string
@@ -87,6 +88,12 @@ const contactForm = reactive({
   message: ''
 })
 
+const sectionMotion = {
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.3, ease: 'easeOut' }
+}
+
 const mailtoHref = computed(() => {
   const subject = 'Colaboración con Jhey Pi'
   const body = [
@@ -140,7 +147,7 @@ const videoVersions = computed<MediaVersion[]>(() =>
 
 <template>
   <main class="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-12 sm:px-6 sm:py-20 lg:gap-20">
-    <section id="section-about" class="flex flex-col gap-8">
+    <Motion as="section" id="section-about" v-bind="sectionMotion" class="flex flex-col gap-8">
       <div class="flex flex-col gap-6">
         <div class="flex flex-wrap items-center gap-6">
           <div class="flex w-full flex-col items-start gap-5 sm:w-auto sm:flex-row-reverse sm:items-center">
@@ -164,9 +171,9 @@ const videoVersions = computed<MediaVersion[]>(() =>
           </div>
         </div>
       </div>
-    </section>
+    </Motion>
 
-    <section id="section-releases" class="flex flex-col gap-6">
+    <Motion as="section" id="section-releases" v-bind="sectionMotion" class="flex flex-col gap-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-2xl font-semibold">
@@ -201,9 +208,9 @@ const videoVersions = computed<MediaVersion[]>(() =>
             @update:page="releasesPage = $event" />
         </div>
       </div>
-    </section>
+    </Motion>
 
-    <section id="section-videos" class="flex flex-col gap-6">
+    <Motion as="section" id="section-videos" v-bind="sectionMotion" class="flex flex-col gap-6">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-2xl font-semibold">
@@ -238,13 +245,13 @@ const videoVersions = computed<MediaVersion[]>(() =>
             @update:page="videosPage = $event" />
         </div>
       </div>
-    </section>
+    </Motion>
 
     <div v-if="updatedAt" class="text-xs text-muted">
       {{ t('status.feedRefreshed') }} {{ updatedAt }}
     </div>
 
-    <section id="section-contact" class="flex flex-col gap-4">
+    <Motion as="section" id="section-contact" v-bind="sectionMotion" class="flex flex-col gap-4">
       <h2 class="text-2xl font-semibold">
         {{ t('section.contactTitle') }}
       </h2>
@@ -293,7 +300,7 @@ const videoVersions = computed<MediaVersion[]>(() =>
           {{ social.label }}
         </UButton>
       </div> -->
-    </section>
+    </Motion>
 
     <div v-if="pending" class="text-sm text-muted">
       {{ t('status.loading') }}

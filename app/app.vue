@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Motion } from 'motion-v'
+
 useHead({
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -18,6 +20,18 @@ const description = 'A living landing page that connects Spotify and YouTube int
 const { locale, locales, t } = useTranslations()
 
 const isMenuOpen = ref(false)
+
+const headerMotion = {
+  initial: { opacity: 0, y: -12 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.3, ease: 'easeOut' }
+}
+
+const footerMotion = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.3, ease: 'easeOut' }
+}
 
 const navLinks = computed(() => [
   { label: t('nav.about'), href: '#section-about' },
@@ -83,7 +97,7 @@ useSeoMeta({
 <template>
   <UApp>
     <div class="min-h-screen bg-background">
-      <header class="relative overflow-hidden border-b border-default">
+      <Motion as="header" v-bind="headerMotion" class="relative overflow-hidden border-b border-default">
         <SkyBg class="absolute inset-0" />
         <div class="relative mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -114,11 +128,11 @@ useSeoMeta({
             </UCard>
           </div>
         </div>
-      </header>
+      </Motion>
 
       <NuxtPage />
 
-      <footer class="border-t border-default bg-background/80">
+      <Motion as="footer" v-bind="footerMotion" class="border-t border-default bg-background/80">
         <div
           class="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-4 py-6 text-sm text-muted sm:flex-row sm:px-6">
           <div>
@@ -132,7 +146,7 @@ useSeoMeta({
               @update:model-value="setLocale" />
           </div>
         </div>
-      </footer>
+      </Motion>
     </div>
   </UApp>
 </template>
