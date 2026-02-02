@@ -142,8 +142,17 @@ const socials = computed(() => [
       class="flex flex-col gap-8"
     >
       <div class="flex flex-col gap-6">
-        <div class="flex flex-wrap items-center justify-between gap-6">
-          <div class="flex flex-col gap-4">
+        <div class="flex flex-wrap items-center gap-6">
+          <div class="flex w-full flex-col items-start gap-5 sm:w-auto sm:flex-row-reverse sm:items-center">
+            <div class="h-64 w-64 overflow-hidden rounded-full ring-2 ring-primary/40 shadow-lg">
+              <img
+                v-if="artist?.images?.[0]"
+                :src="artist.images[0].url"
+                :alt="artist.name"
+                class="h-full w-full object-cover"
+              >
+            </div>
+            <div class="flex flex-col gap-4">
             <UBadge
               color="primary"
               variant="subtle"
@@ -163,42 +172,8 @@ const socials = computed(() => [
                 {{ paragraph }}
               </p>
             </div>
+            </div>
           </div>
-
-          <UCard
-            v-if="artist"
-            class="w-full max-w-sm"
-            :ui="{ body: 'flex flex-col gap-4' }"
-          >
-            <div class="flex items-center gap-4">
-              <div class="h-24 w-24 overflow-hidden rounded-full ring-2 ring-primary/40 shadow-lg">
-                <img
-                  v-if="artist.images?.[0]"
-                  :src="artist.images[0].url"
-                  :alt="artist.name"
-                  class="h-full w-full object-cover"
-                >
-              </div>
-              <div>
-                <div class="text-sm font-semibold text-highlighted">
-                  Spotify
-                </div>
-                <div class="text-xs text-muted">
-                  {{ artist.followers.toLocaleString() }} followers
-                </div>
-              </div>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <UBadge
-                v-for="genre in artist.genres"
-                :key="genre"
-                color="neutral"
-                variant="subtle"
-              >
-                {{ genre }}
-              </UBadge>
-            </div>
-          </UCard>
         </div>
       </div>
     </section>
