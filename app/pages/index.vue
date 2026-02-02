@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ChangelogVersionProps } from '@nuxt/ui'
+import { nextTick } from 'vue'
 import { Motion } from 'motion-v'
 
 type FeedItem = {
@@ -81,6 +82,33 @@ const pagedVideos = computed(() => {
   const start = (videosPage.value - 1) * videosPerPage
   return videos.value.slice(start, start + videosPerPage)
 })
+
+const scrollToSectionById = async (sectionId: string) => {
+  if (!import.meta.client) {
+    return
+  }
+
+  await nextTick()
+
+  requestAnimationFrame(() => {
+    const section = document.getElementById(sectionId)
+    if (!section) {
+      return
+    }
+
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+}
+
+const handleReleasesPageUpdate = (page: number) => {
+  releasesPage.value = page
+  scrollToSectionById('section-releases')
+}
+
+const handleVideosPageUpdate = (page: number) => {
+  videosPage.value = page
+  scrollToSectionById('section-videos')
+}
 
 const contactForm = reactive({
   name: '',
@@ -205,7 +233,7 @@ const videoVersions = computed<MediaVersion[]>(() =>
         <div v-if="releasePageCount > 1" class="mt-6 flex justify-center">
           <UPagination :page="releasesPage" :total="releases.length" :items-per-page="releasesPerPage" size="sm"
             :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
-            @update:page="releasesPage = $event" />
+            @update:page="handleReleasesPageUpdate" />
         </div>
       </div>
     </Motion>
@@ -242,7 +270,7 @@ const videoVersions = computed<MediaVersion[]>(() =>
         <div v-if="videoPageCount > 1" class="mt-6 flex justify-center">
           <UPagination :page="videosPage" :total="videos.length" :items-per-page="videosPerPage" size="sm"
             :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
-            @update:page="videosPage = $event" />
+            @update:page="handleVideosPageUpdate" />
         </div>
       </div>
     </Motion>
