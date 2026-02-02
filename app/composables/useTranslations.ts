@@ -22,6 +22,17 @@ type Messages = {
     videosSubtitle: string
     contactTitle: string
   }
+  contactForm: {
+    intro: string
+    nameLabel: string
+    namePlaceholder: string
+    emailLabel: string
+    emailPlaceholder: string
+    messageLabel: string
+    messagePlaceholder: string
+    submit: string
+    hint: string
+  }
   badges: {
     official: string
     latestDrops: string
@@ -55,6 +66,17 @@ const messages: Record<LocaleCode, Messages> = {
       videosTitle: 'Videos',
       videosSubtitle: 'Embeds de YouTube · Actualizado cada hora',
       contactTitle: 'Contacto'
+    },
+    contactForm: {
+      intro: '¿Quieres colaborar con Jhey Pi? Escríbenos un DM a {instagram} o email {email}.',
+      nameLabel: 'Nombre',
+      namePlaceholder: 'Tu nombre',
+      emailLabel: 'Email',
+      emailPlaceholder: 'tu@email.com',
+      messageLabel: 'Mensaje',
+      messagePlaceholder: 'Cuéntanos tu idea de colaboración',
+      submit: 'Enviar correo',
+      hint: 'Se abrirá tu aplicación de correo con el mensaje listo para enviar.'
     },
     badges: {
       official: 'Página oficial del artista',
@@ -92,6 +114,17 @@ const messages: Record<LocaleCode, Messages> = {
       videosTitle: 'Videos',
       videosSubtitle: 'YouTube embeds · Updated hourly',
       contactTitle: 'Contact'
+    },
+    contactForm: {
+      intro: 'Want to collaborate with Jhey Pi? Send us a DM at {instagram} or email {email}.',
+      nameLabel: 'Name',
+      namePlaceholder: 'Your name',
+      emailLabel: 'Email',
+      emailPlaceholder: 'you@email.com',
+      messageLabel: 'Message',
+      messagePlaceholder: 'Tell us about your collaboration idea',
+      submit: 'Send email',
+      hint: 'Your email app will open with the message ready to send.'
     },
     badges: {
       official: 'Official artist page',

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { ChangelogVersionProps } from '@nuxt/ui'
+import { nextTick } from 'vue'
+import { Motion, easeOut } from 'motion-v'
 
 type FeedItem = {
   id: string
@@ -81,6 +83,75 @@ const pagedVideos = computed(() => {
   return videos.value.slice(start, start + videosPerPage)
 })
 
+const scrollToSectionById = async (sectionId: string) => {
+  if (!import.meta.client) {
+    return
+  }
+
+  await nextTick()
+
+  requestAnimationFrame(() => {
+    const section = document.getElementById(sectionId)
+    if (!section) {
+      return
+    }
+
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+}
+
+const handleReleasesPageUpdate = (page: number) => {
+  releasesPage.value = page
+  scrollToSectionById('section-releases')
+}
+
+const handleVideosPageUpdate = (page: number) => {
+  videosPage.value = page
+  scrollToSectionById('section-videos')
+}
+
+const contactForm = reactive({
+  name: '',
+  email: '',
+  message: ''
+})
+
+const sectionMotion = {
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.3, ease: easeOut }
+}
+
+const contactIntro = computed(() => {
+  const intro = t('contactForm.intro')
+  const [beforeInstagram, rest = ''] = intro.split('{instagram}')
+  const [betweenInstagramEmail, afterEmail = ''] = rest.split('{email}')
+
+  return {
+    beforeInstagram,
+    betweenInstagramEmail,
+    afterEmail
+  }
+})
+
+const mailtoHref = computed(() => {
+  const subject = 'Colaboración con Jhey Pi'
+  const body = [
+    `Nombre: ${contactForm.name || '-'}`,
+    `Email: ${contactForm.email || '-'}`,
+    '',
+    contactForm.message || ''
+  ].join('\n')
+
+  return `mailto:jp10.manager@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+})
+
+const handleContactSubmit = () => {
+  if (import.meta.client) {
+    window.location.href = mailtoHref.value
+  }
+}
+
 type MediaVersion = ChangelogVersionProps & { item: FeedItem }
 
 const releaseVersions = computed<MediaVersion[]>(() =>
@@ -112,33 +183,14 @@ const videoVersions = computed<MediaVersion[]>(() =>
       }
     }))
 )
-
-const socials = computed(() => [
-  {
-    label: 'YouTube',
-    icon: 'i-simple-icons-youtube',
-    to: 'https://www.youtube.com/c/JpJheyPi/featured',
-    target: '_blank'
-  },
-  {
-    label: 'Facebook',
-    icon: 'i-simple-icons-facebook',
-    to: 'https://www.facebook.com/juanmanuelparrabu',
-    target: '_blank'
-  },
-  {
-    label: 'X',
-    icon: 'i-simple-icons-x',
-    to: 'https://twitter.com/jpoficial_10',
-    target: '_blank'
-  }
-])
 </script>
 
 <template>
   <main class="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-12 sm:px-6 sm:py-20 lg:gap-20">
-    <section
+    <Motion
       id="section-about"
+      as="section"
+      v-bind="sectionMotion"
       class="flex flex-col gap-8"
     >
       <div class="flex flex-col gap-6">
@@ -176,10 +228,12 @@ const socials = computed(() => [
           </div>
         </div>
       </div>
-    </section>
+    </Motion>
 
-    <section
+    <Motion
       id="section-releases"
+      as="section"
+      v-bind="sectionMotion"
       class="flex flex-col gap-6"
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -229,14 +283,16 @@ const socials = computed(() => [
             :items-per-page="releasesPerPage"
             size="sm"
             :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
-            @update:page="releasesPage = $event"
+            @update:page="handleReleasesPageUpdate"
           />
         </div>
       </div>
-    </section>
+    </Motion>
 
-    <section
+    <Motion
       id="section-videos"
+      as="section"
+      v-bind="sectionMotion"
       class="flex flex-col gap-6"
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
@@ -286,11 +342,11 @@ const socials = computed(() => [
             :items-per-page="videosPerPage"
             size="sm"
             :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
-            @update:page="videosPage = $event"
+            @update:page="handleVideosPageUpdate"
           />
         </div>
       </div>
-    </section>
+    </Motion>
 
     <div
       v-if="updatedAt"
@@ -299,14 +355,92 @@ const socials = computed(() => [
       {{ t('status.feedRefreshed') }} {{ updatedAt }}
     </div>
 
-    <section
+    <Motion
       id="section-contact"
+      as="section"
+      v-bind="sectionMotion"
       class="flex flex-col gap-4"
     >
       <h2 class="text-2xl font-semibold">
         {{ t('section.contactTitle') }}
       </h2>
-      <div class="flex flex-wrap gap-3">
+      <p class="max-w-3xl text-sm text-muted">
+        {{ contactIntro.beforeInstagram }}
+        <a
+          href="https://instagram.com/mediaviarecords"
+          target="_blank"
+          rel="noreferrer"
+          class="font-semibold text-primary hover:underline"
+        >Mediavia Records</a>
+        {{ contactIntro.betweenInstagramEmail }}
+        <a
+          href="mailto:jp10.manager@gmail.com"
+          class="font-semibold text-primary hover:underline"
+        >jp10.manager@gmail.com</a>
+        {{ contactIntro.afterEmail }}
+      </p>
+      <UForm
+        :state="contactForm"
+        class="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:grid-cols-2"
+        @submit="handleContactSubmit"
+      >
+        <UFormField
+          :label="t('contactForm.nameLabel')"
+          class="text-sm"
+        >
+          <UInput
+            v-model="contactForm.name"
+            name="name"
+            size="lg"
+            :placeholder="t('contactForm.namePlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
+        <UFormField
+          :label="t('contactForm.emailLabel')"
+          class="text-sm"
+        >
+          <UInput
+            v-model="contactForm.email"
+            name="email"
+            type="email"
+            size="lg"
+            required
+            :placeholder="t('contactForm.emailPlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
+        <UFormField
+          :label="t('contactForm.messageLabel')"
+          class="text-sm sm:col-span-2"
+        >
+          <UTextarea
+            v-model="contactForm.message"
+            name="message"
+            size="lg"
+            :rows="4"
+            required
+            :placeholder="t('contactForm.messagePlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
+        <div class="flex flex-wrap items-center gap-3 sm:col-span-2">
+          <UButton
+            type="submit"
+            size="lg"
+            color="primary"
+            variant="solid"
+            icon="i-heroicons-envelope"
+            class="w-full sm:w-auto bg-gradient-to-r from-primary via-primary to-primary/80 shadow-lg shadow-primary/30 transition hover:-translate-y-0.5 hover:shadow-primary/50"
+          >
+            {{ t('contactForm.submit') }}
+          </UButton>
+          <span class="text-xs text-muted">
+            {{ t('contactForm.hint') }}
+          </span>
+        </div>
+      </UForm>
+      <!-- <div class="flex flex-wrap gap-3">
         <UButton
           v-for="social in socials"
           :key="social.label"
@@ -317,8 +451,8 @@ const socials = computed(() => [
         >
           {{ social.label }}
         </UButton>
-      </div>
-    </section>
+      </div> -->
+    </Motion>
 
     <div
       v-if="pending"
