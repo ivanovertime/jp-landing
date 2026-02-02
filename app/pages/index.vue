@@ -175,23 +175,40 @@ const videoVersions = computed<MediaVersion[]>(() =>
 
 <template>
   <main class="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-12 sm:px-6 sm:py-20 lg:gap-20">
-    <Motion as="section" id="section-about" v-bind="sectionMotion" class="flex flex-col gap-8">
+    <Motion
+      id="section-about"
+      as="section"
+      v-bind="sectionMotion"
+      class="flex flex-col gap-8"
+    >
       <div class="flex flex-col gap-6">
         <div class="flex flex-wrap items-center gap-6">
           <div class="flex w-full flex-col items-start gap-5 sm:w-auto sm:flex-row-reverse sm:items-center">
             <div class="h-64 w-64 overflow-hidden rounded-full ring-2 ring-primary/40 shadow-lg">
-              <img v-if="artist?.images?.[0]" :src="artist.images[0].url" :alt="artist.name"
-                class="h-full w-full object-cover">
+              <img
+                v-if="artist?.images?.[0]"
+                :src="artist.images[0].url"
+                :alt="artist.name"
+                class="h-full w-full object-cover"
+              >
             </div>
             <div class="flex flex-col gap-4">
-              <UBadge color="primary" variant="subtle" class="w-fit">
+              <UBadge
+                color="primary"
+                variant="subtle"
+                class="w-fit"
+              >
                 {{ t('badges.official') }}
               </UBadge>
               <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
                 {{ artist?.name || 'Jhey Pi' }}
               </h1>
               <div class="max-w-2xl text-sm text-muted sm:text-base">
-                <p v-for="(paragraph, index) in aboutCopy" :key="paragraph" :class="{ 'mt-4': index > 0 }">
+                <p
+                  v-for="(paragraph, index) in aboutCopy"
+                  :key="paragraph"
+                  :class="{ 'mt-4': index > 0 }"
+                >
                   {{ paragraph }}
                 </p>
               </div>
@@ -201,7 +218,12 @@ const videoVersions = computed<MediaVersion[]>(() =>
       </div>
     </Motion>
 
-    <Motion as="section" id="section-releases" v-bind="sectionMotion" class="flex flex-col gap-6">
+    <Motion
+      id="section-releases"
+      as="section"
+      v-bind="sectionMotion"
+      class="flex flex-col gap-6"
+    >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-2xl font-semibold">
@@ -211,18 +233,27 @@ const videoVersions = computed<MediaVersion[]>(() =>
             {{ t('section.releasesSubtitle') }}
           </p>
         </div>
-        <UBadge color="neutral" variant="subtle">
+        <UBadge
+          color="neutral"
+          variant="subtle"
+        >
           {{ t('badges.latestDrops') }}
         </UBadge>
       </div>
 
-      <div v-if="error" class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">
+      <div
+        v-if="error"
+        class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200"
+      >
         {{ t('errors.releases') }}
       </div>
 
       <div v-else>
-        <UChangelogVersions :key="releasesPage" :indicator-motion="{ damping: 26, restDelta: 0.001 }"
-          :versions="releaseVersions">
+        <UChangelogVersions
+          :key="releasesPage"
+          :indicator-motion="{ damping: 26, restDelta: 0.001 }"
+          :versions="releaseVersions"
+        >
           <template #body="{ version }">
             <div class="mt-6">
               <EmbedFrame :item="version.item" />
@@ -230,15 +261,28 @@ const videoVersions = computed<MediaVersion[]>(() =>
           </template>
         </UChangelogVersions>
 
-        <div v-if="releasePageCount > 1" class="mt-6 flex justify-center">
-          <UPagination :page="releasesPage" :total="releases.length" :items-per-page="releasesPerPage" size="sm"
+        <div
+          v-if="releasePageCount > 1"
+          class="mt-6 flex justify-center"
+        >
+          <UPagination
+            :page="releasesPage"
+            :total="releases.length"
+            :items-per-page="releasesPerPage"
+            size="sm"
             :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
-            @update:page="handleReleasesPageUpdate" />
+            @update:page="handleReleasesPageUpdate"
+          />
         </div>
       </div>
     </Motion>
 
-    <Motion as="section" id="section-videos" v-bind="sectionMotion" class="flex flex-col gap-6">
+    <Motion
+      id="section-videos"
+      as="section"
+      v-bind="sectionMotion"
+      class="flex flex-col gap-6"
+    >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-2xl font-semibold">
@@ -248,18 +292,27 @@ const videoVersions = computed<MediaVersion[]>(() =>
             {{ t('section.videosSubtitle') }}
           </p>
         </div>
-        <UBadge color="neutral" variant="subtle">
+        <UBadge
+          color="neutral"
+          variant="subtle"
+        >
           {{ t('badges.latestClips') }}
         </UBadge>
       </div>
 
-      <div v-if="error" class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">
+      <div
+        v-if="error"
+        class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200"
+      >
         {{ t('errors.videos') }}
       </div>
 
       <div v-else>
-        <UChangelogVersions :key="videosPage" :indicator-motion="{ damping: 26, restDelta: 0.001 }"
-          :versions="videoVersions">
+        <UChangelogVersions
+          :key="videosPage"
+          :indicator-motion="{ damping: 26, restDelta: 0.001 }"
+          :versions="videoVersions"
+        >
           <template #body="{ version }">
             <div class="mt-6">
               <EmbedFrame :item="version.item" />
@@ -267,48 +320,107 @@ const videoVersions = computed<MediaVersion[]>(() =>
           </template>
         </UChangelogVersions>
 
-        <div v-if="videoPageCount > 1" class="mt-6 flex justify-center">
-          <UPagination :page="videosPage" :total="videos.length" :items-per-page="videosPerPage" size="sm"
+        <div
+          v-if="videoPageCount > 1"
+          class="mt-6 flex justify-center"
+        >
+          <UPagination
+            :page="videosPage"
+            :total="videos.length"
+            :items-per-page="videosPerPage"
+            size="sm"
             :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
-            @update:page="handleVideosPageUpdate" />
+            @update:page="handleVideosPageUpdate"
+          />
         </div>
       </div>
     </Motion>
 
-    <div v-if="updatedAt" class="text-xs text-muted">
+    <div
+      v-if="updatedAt"
+      class="text-xs text-muted"
+    >
       {{ t('status.feedRefreshed') }} {{ updatedAt }}
     </div>
 
-    <Motion as="section" id="section-contact" v-bind="sectionMotion" class="flex flex-col gap-4">
+    <Motion
+      id="section-contact"
+      as="section"
+      v-bind="sectionMotion"
+      class="flex flex-col gap-4"
+    >
       <h2 class="text-2xl font-semibold">
         {{ t('section.contactTitle') }}
       </h2>
       <p class="max-w-3xl text-sm text-muted">
         {{ t('contactForm.intro').split('{instagram}')[0] }}
-        <a href="https://instagram.com/mediaviarecords" target="_blank" rel="noreferrer"
-          class="font-semibold text-primary hover:underline">Mediavia Records</a>
+        <a
+          href="https://instagram.com/mediaviarecords"
+          target="_blank"
+          rel="noreferrer"
+          class="font-semibold text-primary hover:underline"
+        >Mediavia Records</a>
         {{ t('contactForm.intro').split('{instagram}')[1].split('{email}')[0] }}
-        <a href="mailto:jp10.manager@gmail.com"
-          class="font-semibold text-primary hover:underline">jp10.manager@gmail.com</a>
+        <a
+          href="mailto:jp10.manager@gmail.com"
+          class="font-semibold text-primary hover:underline"
+        >jp10.manager@gmail.com</a>
         {{ t('contactForm.intro').split('{email}')[1] }}
       </p>
-      <UForm :state="contactForm" class="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:grid-cols-2"
-        @submit="handleContactSubmit">
-        <UFormField :label="t('contactForm.nameLabel')" class="text-sm">
-          <UInput v-model="contactForm.name" name="name" size="lg" :placeholder="t('contactForm.namePlaceholder')"
-            class="w-full" />
+      <UForm
+        :state="contactForm"
+        class="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:grid-cols-2"
+        @submit="handleContactSubmit"
+      >
+        <UFormField
+          :label="t('contactForm.nameLabel')"
+          class="text-sm"
+        >
+          <UInput
+            v-model="contactForm.name"
+            name="name"
+            size="lg"
+            :placeholder="t('contactForm.namePlaceholder')"
+            class="w-full"
+          />
         </UFormField>
-        <UFormField :label="t('contactForm.emailLabel')" class="text-sm">
-          <UInput v-model="contactForm.email" name="email" type="email" size="lg" required
-            :placeholder="t('contactForm.emailPlaceholder')" class="w-full" />
+        <UFormField
+          :label="t('contactForm.emailLabel')"
+          class="text-sm"
+        >
+          <UInput
+            v-model="contactForm.email"
+            name="email"
+            type="email"
+            size="lg"
+            required
+            :placeholder="t('contactForm.emailPlaceholder')"
+            class="w-full"
+          />
         </UFormField>
-        <UFormField :label="t('contactForm.messageLabel')" class="text-sm sm:col-span-2">
-          <UTextarea v-model="contactForm.message" name="message" size="lg" :rows="4" required
-            :placeholder="t('contactForm.messagePlaceholder')" class="w-full" />
+        <UFormField
+          :label="t('contactForm.messageLabel')"
+          class="text-sm sm:col-span-2"
+        >
+          <UTextarea
+            v-model="contactForm.message"
+            name="message"
+            size="lg"
+            :rows="4"
+            required
+            :placeholder="t('contactForm.messagePlaceholder')"
+            class="w-full"
+          />
         </UFormField>
         <div class="flex flex-wrap items-center gap-3 sm:col-span-2">
-          <UButton type="submit" size="lg" color="primary" variant="solid" icon="i-heroicons-envelope"
-            class="w-full sm:w-auto bg-gradient-to-r from-primary via-primary to-primary/80 shadow-lg shadow-primary/30 transition hover:-translate-y-0.5 hover:shadow-primary/50">
+          <UButton
+            type="submit"
+            size="lg"
+            color="primary"
+            variant="solid"
+            icon="i-heroicons-envelope"
+            class="w-full sm:w-auto bg-gradient-to-r from-primary via-primary to-primary/80 shadow-lg shadow-primary/30 transition hover:-translate-y-0.5 hover:shadow-primary/50"
+          >
             {{ t('contactForm.submit') }}
           </UButton>
           <span class="text-xs text-muted">
@@ -330,7 +442,10 @@ const videoVersions = computed<MediaVersion[]>(() =>
       </div> -->
     </Motion>
 
-    <div v-if="pending" class="text-sm text-muted">
+    <div
+      v-if="pending"
+      class="text-sm text-muted"
+    >
       {{ t('status.loading') }}
     </div>
   </main>
