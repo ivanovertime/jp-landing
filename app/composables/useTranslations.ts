@@ -96,7 +96,7 @@ const messages: Record<LocaleCode, Messages> = {
       videos: 'No se pudieron cargar los videos en este momento.'
     },
     status: {
-      feedRefreshed: 'Feed actualizado:',
+      feedRefreshed: 'Última actualización:',
       loading: 'Cargando el feed más reciente…'
     }
   },
@@ -144,7 +144,7 @@ const messages: Record<LocaleCode, Messages> = {
       videos: 'Unable to load videos right now.'
     },
     status: {
-      feedRefreshed: 'Feed refreshed:',
+      feedRefreshed: 'Last updated:',
       loading: 'Loading the latest feed…'
     }
   }
