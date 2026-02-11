@@ -85,10 +85,10 @@ const messages: Record<LocaleCode, Messages> = {
     },
     copy: {
       about: [
-        'Jhey Pi es un artista urbano emergente venezolano basado en EE.UU., con más de 1 millón de seguidores orgánicos en sus redes sociales y un sonido melódico que conecta con audiencias jóvenes latinas.',
-        'Su más reciente lanzamiento “Making LUV” está mostrando momentum notable: más de 10.000 streams solo en España en los primeros 15 días, guardados altos y repetición orgánica.',
-        'Con influencias de Duki, Milo J y la nueva ola latina, Jhey Pi mezcla trap suave, vibra callejera elegante y letras con identidad propia.',
-        'Todo su crecimiento ha sido sin disquera, impulsado por estrategia, contenido y comunidad real.'
+        'Jhey Pi es un artista urbano venezolano radicado en Estados Unidos que ha construido, de manera completamente independiente, una comunidad que supera el millón de seguidores orgánicos en plataformas digitales. Su propuesta musical combina sensibilidad melódica, energía urbana contemporánea y una identidad auténtica que conecta con audiencias jóvenes latinas dentro y fuera de Estados Unidos.',
+        'Su sencillo “Making LUV” marcó un punto de consolidación en su proyección internacional, superando las 130.000 reproducciones en Spotify y mostrando una respuesta destacada en España durante sus primeras semanas. El lanzamiento evidenció métricas sólidas de guardados, repetición orgánica y retención de audiencia, indicadores clave de conexión real más allá del consumo puntual.',
+        'El proyecto se ha desarrollado sin respaldo de una disquera multinacional, bajo un modelo independiente estructurado que integra planificación estratégica de lanzamientos, optimización de plataformas digitales y construcción constante de marca. El crecimiento ha sido sostenido, basado en disciplina, consistencia y una comunidad auténtica que responde activamente a cada estreno.',
+        'Actualmente, Jhey Pi se encuentra en una etapa de expansión y consolidación internacional, fortaleciendo su identidad musical y visual mientras proyecta nuevas colaboraciones y alianzas estratégicas que potencien el alcance de un proyecto ya validado de forma orgánica.'
       ]
     },
     errors: {
@@ -133,10 +133,10 @@ const messages: Record<LocaleCode, Messages> = {
     },
     copy: {
       about: [
-        'Jhey Pi is an emerging Venezuelan urban artist based in the U.S., with more than 1 million organic followers on social media and a melodic sound that connects with young Latin audiences.',
-        'His most recent release “Making LUV” is showing notable momentum: more than 10,000 streams in Spain in the first 15 days, high saves, and organic repeat listening.',
-        'With influences from Duki, Milo J, and the new Latin wave, Jhey Pi blends soft trap, an elegant street vibe, and lyrics with his own identity.',
-        'All of his growth has been without a label, driven by strategy, content, and a real community.'
+        'Jhey Pi is a Venezuelan urban artist based in the United States who has built, entirely independently, a community of more than one million organic followers across digital platforms. His musical proposal blends melodic sensitivity, contemporary urban energy, and an authentic identity that connects with young Latin audiences inside and outside the United States.',
+        'His single “Making LUV” marked a turning point in his international projection, surpassing 130,000 streams on Spotify and showing a standout response in Spain during its first weeks. The release showed solid metrics in saves, organic repeat listening, and audience retention—key indicators of real connection beyond one‑time consumption.',
+        'The project has developed without the backing of a multinational label, under a structured independent model that integrates strategic release planning, digital platform optimization, and consistent brand building. Growth has been sustained, based on discipline, consistency, and an authentic community that actively responds to each release.',
+        'Currently, Jhey Pi is in a stage of international expansion and consolidation, strengthening his musical and visual identity while projecting new collaborations and strategic alliances that amplify the reach of a project already validated organically.'
       ]
     },
     errors: {
