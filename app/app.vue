@@ -64,17 +64,11 @@ const socialLinks = [
     target: '_blank'
   },
   {
-    label: 'X',
-    icon: 'i-simple-icons-x',
-    to: 'https://twitter.com/jpoficial_10',
+    label: 'TikTok',
+    icon: 'i-simple-icons-tiktok',
+    to: 'https://www.tiktok.com/@jhey.pii',
     target: '_blank'
   },
-  // {
-  //   label: 'TikTok',
-  //   icon: 'i-simple-icons-tiktok',
-  //   to: 'https://www.tiktok.com/',
-  //   target: '_blank'
-  // },
   {
     label: 'Spotify',
     icon: 'i-simple-icons-spotify',
