@@ -14,10 +14,26 @@ useHead({
   }
 })
 
-const title = 'Musician Timeline'
-const description = 'A living landing page that connects Spotify and YouTube into one immersive timeline.'
+const fallbackDescription = 'Official landing page for Jhey Pi — releases, videos, and updates in one place.'
 
-const { locale, locales, t } = useTranslations()
+const { locale, locales, t, tArray } = useTranslations()
+
+const aboutCopy = computed(() => tArray('copy.about'))
+
+const seoTitle = computed(() => (
+  locale.value === 'en'
+    ? 'Jhey Pi — Official Artist Timeline'
+    : 'Jhey Pi — Línea de tiempo oficial'
+))
+
+const seoDescription = computed(() => {
+  const [firstParagraph = ''] = aboutCopy.value
+  const description = (firstParagraph || fallbackDescription)
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return description.length > 160 ? `${description.slice(0, 157)}...` : description
+})
 
 const isMenuOpen = ref(false)
 
@@ -78,11 +94,13 @@ const socialLinks = [
 ]
 
 useSeoMeta({
-  title,
-  description,
-  ogTitle: title,
-  ogDescription: description,
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
   ogImage: '/social-preview.png',
+  twitterTitle: seoTitle,
+  twitterDescription: seoDescription,
   twitterImage: '/social-preview.png',
   twitterCard: 'summary_large_image'
 })
