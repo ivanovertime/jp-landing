@@ -78,7 +78,7 @@ const messages: Record<LocaleCode, Messages> = {
       videosTitle: 'Videos',
       videosSubtitle: 'Embeds de YouTube · Actualizado cada hora',
       eventsTitle: 'Próximos eventos',
-      eventsSubtitle: 'Agenda pública de Google Calendar · Actualizado cada hora',
+      eventsSubtitle: 'Agenda pública del artista · Actualizado cada hora',
       eventsEmpty: 'No hay eventos próximos en este momento.',
       contactTitle: 'Contacto'
     },
@@ -137,7 +137,7 @@ const messages: Record<LocaleCode, Messages> = {
       videosTitle: 'Videos',
       videosSubtitle: 'YouTube embeds · Updated hourly',
       eventsTitle: 'Upcoming events',
-      eventsSubtitle: 'Public Google Calendar · Updated hourly',
+      eventsSubtitle: 'Public artist calendar · Updated hourly',
       eventsEmpty: 'No upcoming events right now.',
       contactTitle: 'Contact'
     },
