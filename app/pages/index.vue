@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ChangelogVersionProps } from '@nuxt/ui'
-import { nextTick } from 'vue'
+import { nextTick, onMounted } from 'vue'
 import { Motion, easeOut } from 'motion-v'
 
 type FeedItem = {
@@ -53,11 +53,8 @@ const { data: feed, pending, error } = await useFetch<FeedResponse>('/api/feed',
   })
 })
 
-const eventsCacheBuster = String(Math.floor(Date.now() / 60000))
-
-const { data: eventsFeed, pending: eventsPending, error: eventsError } = await useFetch<EventsResponse>('/api/events', {
-  key: `events-${eventsCacheBuster}`,
-  query: { t: eventsCacheBuster },
+const { data: eventsFeed, pending: eventsPending, error: eventsError, refresh: refreshEvents } = await useFetch<EventsResponse>('/api/events', {
+  key: 'events',
   default: () => ({
     updatedAt: '',
     items: []
@@ -173,6 +170,10 @@ const handleContactSubmit = () => {
     window.location.href = mailtoHref.value
   }
 }
+
+onMounted(() => {
+  refreshEvents()
+})
 
 type MediaVersion = ChangelogVersionProps & { item: FeedItem }
 
