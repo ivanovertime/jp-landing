@@ -107,7 +107,7 @@ export default defineEventHandler(async (event): Promise<EventsResponse> => {
         return {
           id: item.id,
           title: item.summary?.trim() || 'Event',
-          description: stripHtml(item.description),
+          description: normalizeDescription(item.description),
           location: item.location?.trim(),
           start: startRaw,
           end: endRaw,
@@ -158,6 +158,26 @@ function stripHtml(value?: string): string | undefined {
   return text || undefined
 }
 
+function normalizeDescription(value?: string): string | undefined {
+  const text = stripHtml(value)
+  if (!text) {
+    return undefined
+  }
+
+  let cleaned = text
+  const urls = extractUrls(value)
+  for (const url of urls) {
+    cleaned = cleaned.replaceAll(url, ' ')
+  }
+
+  cleaned = cleaned
+    .replace(/\b(forms\.gle|drive\.google\.com|docs\.google\.com)\/[^\s<>"]+/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return cleaned || undefined
+}
+
 function buildLinks(item: GoogleCalendarEvent): EventLink[] | undefined {
   const links: EventLink[] = []
   const seen = new Set<string>()
@@ -205,14 +225,16 @@ function extractUrls(value?: string): string[] {
   }
 
   const matches = value.match(/https?:\/\/[^\s<>"]+/g)
-  if (!matches) {
+  const googleMatches = value.match(/\b(?:forms\.gle|drive\.google\.com|docs\.google\.com)\/[^\s<>"]+/gi)
+  const combined = [...(matches ?? []), ...(googleMatches ?? [])]
+  if (combined.length === 0) {
     return []
   }
 
   const seen = new Set<string>()
   const urls: string[] = []
 
-  for (const match of matches) {
+  for (const match of combined) {
     const cleaned = match.replace(/[)\]},.]+$/g, '')
     if (seen.has(cleaned)) {
       continue
