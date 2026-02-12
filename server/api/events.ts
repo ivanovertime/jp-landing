@@ -175,6 +175,9 @@ function normalizeDescription(value?: string): string | undefined {
 
   cleaned = cleaned
     .replace(/\b(forms\.gle|drive\.google\.com|docs\.google\.com)\/[^\s<>"]+/gi, ' ')
+    .replace(/https?:\/\/[^\s<>"]*/gi, ' ')
+    .replace(/https?:\/$/gi, '')
+    .replace(/https?:$/gi, '')
     .replace(/\s+/g, ' ')
     .trim()
 
@@ -224,8 +227,9 @@ function extractUrls(value?: string): string[] {
     return []
   }
 
-  const matches = value.match(/https?:\/\/[^\s<>"]+/g)
-  const googleMatches = value.match(/\b(?:forms\.gle|drive\.google\.com|docs\.google\.com)\/[^\s<>"]+/gi)
+  const normalizedValue = value.replace(/&amp;/g, '&')
+  const matches = normalizedValue.match(/https?:\/\/[^\s<>"]+/g)
+  const googleMatches = normalizedValue.match(/\b(?:forms\.gle|drive\.google\.com|docs\.google\.com)\/[^\s<>"]+/gi)
   const combined = [...(matches ?? []), ...(googleMatches ?? [])]
   if (combined.length === 0) {
     return []
@@ -236,14 +240,27 @@ function extractUrls(value?: string): string[] {
 
   for (const match of combined) {
     const cleaned = match.replace(/[)\]},.]+$/g, '')
-    if (seen.has(cleaned)) {
+    const normalized = normalizeUrl(cleaned)
+    if (seen.has(normalized)) {
       continue
     }
-    seen.add(cleaned)
-    urls.push(cleaned)
+    seen.add(normalized)
+    urls.push(normalized)
   }
 
   return urls
+}
+
+function normalizeUrl(url: string): string {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url
+  }
+
+  if (url.startsWith('docs.google.com') || url.startsWith('forms.gle') || url.startsWith('drive.google.com')) {
+    return `https://${url}`
+  }
+
+  return url
 }
 
 function toLinkType(url: string): EventLinkType {
