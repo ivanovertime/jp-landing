@@ -1,6 +1,9 @@
+type EventLinkType = 'calendar' | 'live' | 'rsvp' | 'download' | 'link' | 'attachment'
+
 type EventLink = {
-  label: string
+  type: EventLinkType
   url: string
+  title?: string
 }
 
 type EventItem = {
@@ -182,38 +185,35 @@ function buildLinks(item: GoogleCalendarEvent): EventLink[] | undefined {
   const links: EventLink[] = []
   const seen = new Set<string>()
 
-  const pushLink = (label: string, url?: string) => {
+  const pushLink = (type: EventLinkType, url?: string, title?: string) => {
     if (!url || seen.has(url)) {
       return
     }
     seen.add(url)
-    links.push({ label, url })
+    links.push({ type, url, title })
   }
 
-  pushLink('Google Calendar', item.htmlLink)
-  pushLink('Google Meet', item.hangoutLink)
+  pushLink('calendar', item.htmlLink)
+  pushLink('live', item.hangoutLink)
 
   extractUrls(item.description).forEach((url) => {
-    const label = toLinkLabel(url)
-    pushLink(label, url)
+    const type = toLinkType(url)
+    pushLink(type, url)
   })
 
   item.conferenceData?.entryPoints?.forEach((entry) => {
     if (!entry?.uri) {
       return
     }
-    const label = entry.entryPointType
-      ? entry.entryPointType.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase())
-      : 'Conference'
-    pushLink(label, entry.uri)
+    pushLink('live', entry.uri)
   })
 
   item.attachments?.forEach((attachment) => {
     if (!attachment?.fileUrl) {
       return
     }
-    const label = attachment.title?.trim() || toLinkLabel(attachment.fileUrl)
-    pushLink(label, attachment.fileUrl)
+    const title = attachment.title?.trim() || undefined
+    pushLink('attachment', attachment.fileUrl, title)
   })
 
   return links.length ? links : undefined
@@ -246,18 +246,13 @@ function extractUrls(value?: string): string[] {
   return urls
 }
 
-function toLinkLabel(url: string): string {
+function toLinkType(url: string): EventLinkType {
   if (url.includes('forms.gle') || url.includes('docs.google.com/forms')) {
-    return 'Google Form'
+    return 'rsvp'
   }
   if (url.includes('drive.google.com')) {
-    return 'Google Drive'
+    return 'download'
   }
 
-  try {
-    const parsed = new URL(url)
-    return parsed.hostname.replace('www.', '')
-  } catch {
-    return 'Link'
-  }
+  return 'link'
 }

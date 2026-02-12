@@ -48,6 +48,14 @@ type Messages = {
     location: string
     links: string
   }
+  links: {
+    calendar: string
+    live: string
+    rsvp: string
+    download: string
+    link: string
+    attachment: string
+  }
   copy: {
     about: string[]
   }
@@ -103,6 +111,14 @@ const messages: Record<LocaleCode, Messages> = {
       when: 'Cuándo',
       location: 'Lugar',
       links: 'Enlaces'
+    },
+    links: {
+      calendar: 'Agendar en calendario',
+      live: 'Entrar en vivo',
+      rsvp: 'Confirmar asistencia',
+      download: 'Descargar info',
+      link: 'Abrir enlace',
+      attachment: 'Descargar archivo'
     },
     copy: {
       about: [
@@ -162,6 +178,14 @@ const messages: Record<LocaleCode, Messages> = {
       when: 'When',
       location: 'Location',
       links: 'Links'
+    },
+    links: {
+      calendar: 'Add to calendar',
+      live: 'Join live',
+      rsvp: 'RSVP',
+      download: 'Download info',
+      link: 'Open link',
+      attachment: 'Download file'
     },
     copy: {
       about: [

@@ -36,7 +36,7 @@ type EventItem = {
   end?: string
   allDay?: boolean
   htmlLink?: string
-  links?: { label: string, url: string }[]
+  links?: { type: 'calendar' | 'live' | 'rsvp' | 'download' | 'link' | 'attachment', url: string, title?: string }[]
 }
 
 type EventsResponse = {
@@ -68,6 +68,23 @@ const events = computed(() => eventsFeed.value?.items ?? [])
 
 const { t, tArray } = useTranslations()
 const aboutCopy = computed(() => tArray('copy.about'))
+const linkLabels = computed(() => ({
+  calendar: t('links.calendar'),
+  live: t('links.live'),
+  rsvp: t('links.rsvp'),
+  download: t('links.download'),
+  link: t('links.link'),
+  attachment: t('links.attachment')
+}))
+
+const linkIcons = {
+  calendar: 'i-lucide-calendar',
+  live: 'i-lucide-video',
+  rsvp: 'i-lucide-clipboard-check',
+  download: 'i-lucide-download',
+  link: 'i-lucide-link',
+  attachment: 'i-lucide-file-text'
+} satisfies Record<NonNullable<EventItem['links']>[number]['type'], string>
 
 const releases = computed(() => items.value.filter(item => item.provider === 'spotify'))
 const videos = computed(() => items.value.filter(item => item.provider === 'youtube'))
@@ -499,6 +516,7 @@ const formatEventDateRange = (item: EventItem) => {
                     v-for="link in version.item.links"
                     :key="link.url"
                     :to="link.url"
+                    :icon="linkIcons[link.type]"
                     target="_blank"
                     rel="noreferrer"
                     size="xs"
@@ -506,7 +524,7 @@ const formatEventDateRange = (item: EventItem) => {
                     color="primary"
                     class="text-xs font-semibold"
                   >
-                    {{ link.label }}
+                    {{ link.title || linkLabels[link.type] || link.url }}
                   </UButton>
                 </div>
               </div>
