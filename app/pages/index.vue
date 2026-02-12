@@ -27,6 +27,23 @@ type FeedResponse = {
   }
 }
 
+type EventItem = {
+  id: string
+  title: string
+  description?: string
+  location?: string
+  start: string
+  end?: string
+  allDay?: boolean
+  htmlLink?: string
+  links?: { label: string, url: string }[]
+}
+
+type EventsResponse = {
+  updatedAt: string
+  items: EventItem[]
+}
+
 const { data: feed, pending, error } = await useFetch<FeedResponse>('/api/feed', {
   key: 'feed',
   default: () => ({
@@ -36,16 +53,21 @@ const { data: feed, pending, error } = await useFetch<FeedResponse>('/api/feed',
   })
 })
 
-const items = computed(() => feed.value?.items ?? [])
-const updatedAt = computed(() => {
-  if (!feed.value?.updatedAt) {
-    return null
-  }
+const eventsCacheBuster = String(Math.floor(Date.now() / 60000))
 
-  return new Date(feed.value.updatedAt).toLocaleString()
+const { data: eventsFeed, pending: eventsPending, error: eventsError } = await useFetch<EventsResponse>('/api/events', {
+  key: `events-${eventsCacheBuster}`,
+  query: { t: eventsCacheBuster },
+  default: () => ({
+    updatedAt: '',
+    items: []
+  })
 })
 
+const items = computed(() => feed.value?.items ?? [])
+
 const artist = computed(() => feed.value?.artist ?? null)
+const events = computed(() => eventsFeed.value?.items ?? [])
 
 const { t, tArray } = useTranslations()
 const aboutCopy = computed(() => tArray('copy.about'))
@@ -183,6 +205,45 @@ const videoVersions = computed<MediaVersion[]>(() =>
       }
     }))
 )
+
+type EventVersion = ChangelogVersionProps & { item: EventItem }
+
+const eventVersions = computed<EventVersion[]>(() =>
+  events.value
+    .filter((item): item is EventItem => Boolean(item))
+    .slice(0, 10)
+    .map(item => ({
+      title: '',
+      description: '',
+      date: item.start || eventsFeed.value?.updatedAt || new Date().toISOString(),
+      item,
+      ui: {
+        container: 'max-w-none'
+      }
+    }))
+)
+
+const formatEventDateRange = (item: EventItem) => {
+  if (!item.start) {
+    return ''
+  }
+
+  const startDate = new Date(item.start)
+  if (Number.isNaN(startDate.getTime())) {
+    return item.start
+  }
+
+  if (item.allDay) {
+    return startDate.toLocaleDateString()
+  }
+
+  const endDate = item.end ? new Date(item.end) : null
+  if (!endDate || Number.isNaN(endDate.getTime())) {
+    return startDate.toLocaleString()
+  }
+
+  return `${startDate.toLocaleString()} → ${endDate.toLocaleString()}`
+}
 </script>
 
 <template>
@@ -348,12 +409,111 @@ const videoVersions = computed<MediaVersion[]>(() =>
       </div>
     </Motion>
 
-    <div
-      v-if="updatedAt"
-      class="text-xs text-muted"
+    <Motion
+      id="section-events"
+      as="section"
+      v-bind="sectionMotion"
+      class="flex flex-col gap-6"
     >
-      {{ t('status.feedRefreshed') }} {{ updatedAt }}
-    </div>
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-semibold">
+            {{ t('section.eventsTitle') }}
+          </h2>
+          <p class="text-sm text-muted">
+            {{ t('section.eventsSubtitle') }}
+          </p>
+        </div>
+        <UBadge
+          color="neutral"
+          variant="subtle"
+        >
+          {{ t('badges.upcoming') }}
+        </UBadge>
+      </div>
+
+      <div
+        v-if="eventsError"
+        class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200"
+      >
+        {{ t('errors.events') }}
+      </div>
+
+      <div v-else>
+        <div
+          v-if="eventsPending"
+          class="text-sm text-muted"
+        >
+          {{ t('status.loading') }}
+        </div>
+
+        <div
+          v-else-if="events.length === 0"
+          class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-muted"
+        >
+          {{ t('section.eventsEmpty') }}
+        </div>
+
+        <UChangelogVersions
+          v-else
+          :indicator-motion="{ damping: 26, restDelta: 0.001 }"
+          :versions="eventVersions"
+        >
+          <template #body="{ version }">
+            <div class="relative z-10 mt-6 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur sm:p-6">
+              <div class="flex flex-col gap-4">
+                <div class="space-y-1">
+                  <h3 class="text-lg font-semibold">
+                    {{ version.item.title }}
+                  </h3>
+                  <p
+                    v-if="version.item.location"
+                    class="text-sm text-muted"
+                  >
+                    {{ version.item.location }}
+                  </p>
+                </div>
+                <div class="space-y-2">
+                  <p class="text-sm text-muted">
+                    <span class="font-semibold text-muted">{{ t('labels.when') }}:</span>
+                    {{ formatEventDateRange(version.item) }}
+                  </p>
+                </div>
+
+                <p
+                  v-if="version.item.description"
+                  class="text-sm text-muted"
+                >
+                  {{ version.item.description }}
+                </p>
+
+                <div
+                  v-if="version.item.links?.length"
+                  class="flex flex-wrap items-center gap-2"
+                >
+                  <span class="text-xs font-semibold uppercase tracking-wide text-muted">
+                    {{ t('labels.links') }}
+                  </span>
+                  <UButton
+                    v-for="link in version.item.links"
+                    :key="link.url"
+                    :to="link.url"
+                    target="_blank"
+                    rel="noreferrer"
+                    size="xs"
+                    variant="soft"
+                    color="primary"
+                    class="text-xs font-semibold"
+                  >
+                    {{ link.label }}
+                  </UButton>
+                </div>
+              </div>
+            </div>
+          </template>
+        </UChangelogVersions>
+      </div>
+    </Motion>
 
     <Motion
       id="section-contact"
@@ -440,18 +600,6 @@ const videoVersions = computed<MediaVersion[]>(() =>
           </span>
         </div>
       </UForm>
-      <!-- <div class="flex flex-wrap gap-3">
-        <UButton
-          v-for="social in socials"
-          :key="social.label"
-          :icon="social.icon"
-          :to="social.to"
-          :target="social.target"
-          size="lg"
-        >
-          {{ social.label }}
-        </UButton>
-      </div> -->
     </Motion>
 
     <div

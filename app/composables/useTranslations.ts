@@ -12,6 +12,7 @@ type Messages = {
     about: string
     releases: string
     videos: string
+    events: string
     contact: string
   }
   section: {
@@ -20,6 +21,9 @@ type Messages = {
     releasesSubtitle: string
     videosTitle: string
     videosSubtitle: string
+    eventsTitle: string
+    eventsSubtitle: string
+    eventsEmpty: string
     contactTitle: string
   }
   contactForm: {
@@ -37,6 +41,12 @@ type Messages = {
     official: string
     latestDrops: string
     latestClips: string
+    upcoming: string
+  }
+  labels: {
+    when: string
+    location: string
+    links: string
   }
   copy: {
     about: string[]
@@ -44,6 +54,7 @@ type Messages = {
   errors: {
     releases: string
     videos: string
+    events: string
   }
   status: {
     feedRefreshed: string
@@ -57,6 +68,7 @@ const messages: Record<LocaleCode, Messages> = {
       about: 'Sobre mi',
       releases: 'Lanzamientos',
       videos: 'Videos',
+      events: 'Eventos',
       contact: 'Contacto'
     },
     section: {
@@ -65,6 +77,9 @@ const messages: Record<LocaleCode, Messages> = {
       releasesSubtitle: 'Embeds de Spotify · Actualizado cada hora',
       videosTitle: 'Videos',
       videosSubtitle: 'Embeds de YouTube · Actualizado cada hora',
+      eventsTitle: 'Próximos eventos',
+      eventsSubtitle: 'Agenda pública de Google Calendar · Actualizado cada hora',
+      eventsEmpty: 'No hay eventos próximos en este momento.',
       contactTitle: 'Contacto'
     },
     contactForm: {
@@ -81,7 +96,13 @@ const messages: Record<LocaleCode, Messages> = {
     badges: {
       official: 'Página oficial del artista',
       latestDrops: 'Últimos lanzamientos',
-      latestClips: 'Últimos clips'
+      latestClips: 'Últimos clips',
+      upcoming: 'Próximamente'
+    },
+    labels: {
+      when: 'Cuándo',
+      location: 'Lugar',
+      links: 'Enlaces'
     },
     copy: {
       about: [
@@ -93,7 +114,8 @@ const messages: Record<LocaleCode, Messages> = {
     },
     errors: {
       releases: 'No se pudieron cargar los lanzamientos en este momento.',
-      videos: 'No se pudieron cargar los videos en este momento.'
+      videos: 'No se pudieron cargar los videos en este momento.',
+      events: 'No se pudieron cargar los eventos en este momento.'
     },
     status: {
       feedRefreshed: 'Última actualización:',
@@ -105,6 +127,7 @@ const messages: Record<LocaleCode, Messages> = {
       about: 'About',
       releases: 'Releases',
       videos: 'Videos',
+      events: 'Events',
       contact: 'Contact'
     },
     section: {
@@ -113,6 +136,9 @@ const messages: Record<LocaleCode, Messages> = {
       releasesSubtitle: 'Spotify embeds · Updated hourly',
       videosTitle: 'Videos',
       videosSubtitle: 'YouTube embeds · Updated hourly',
+      eventsTitle: 'Upcoming events',
+      eventsSubtitle: 'Public Google Calendar · Updated hourly',
+      eventsEmpty: 'No upcoming events right now.',
       contactTitle: 'Contact'
     },
     contactForm: {
@@ -129,7 +155,13 @@ const messages: Record<LocaleCode, Messages> = {
     badges: {
       official: 'Official artist page',
       latestDrops: 'Latest drops',
-      latestClips: 'Latest clips'
+      latestClips: 'Latest clips',
+      upcoming: 'Upcoming'
+    },
+    labels: {
+      when: 'When',
+      location: 'Location',
+      links: 'Links'
     },
     copy: {
       about: [
@@ -141,7 +173,8 @@ const messages: Record<LocaleCode, Messages> = {
     },
     errors: {
       releases: 'Unable to load releases right now.',
-      videos: 'Unable to load videos right now.'
+      videos: 'Unable to load videos right now.',
+      events: 'Unable to load events right now.'
     },
     status: {
       feedRefreshed: 'Last updated:',

@@ -44,7 +44,10 @@ export default defineNuxtConfig({
       youtubeChannelUrl: env.YOUTUBE_CHANNEL_URL || 'https://www.youtube.com/c/JpJheyPi',
       youtubeChannelId: env.YOUTUBE_CHANNEL_ID || '',
       maxYoutubeItems: env.MAX_YOUTUBE_ITEMS || '24',
-      maxSpotifyItems: env.MAX_SPOTIFY_ITEMS || '24'
+      maxSpotifyItems: env.MAX_SPOTIFY_ITEMS || '24',
+      googleCalendarApiKey: env.GOOGLE_CALENDAR_API_KEY || env.GOOGLE_API_KEY || '',
+      googleCalendarId: env.GOOGLE_CALENDAR_ID || '',
+      googleCalendarTimeZone: env.GOOGLE_CALENDAR_TIMEZONE || env.GOOGLE_CALENDAR_TZ || ''
     }
   })(),
   dir: {
@@ -55,7 +58,8 @@ export default defineNuxtConfig({
   routeRules: isProd
     ? {
         '/': { prerender: true, isr: 3600 },
-        '/api/feed': { cache: { maxAge: 3600, staleMaxAge: 600 } }
+        '/api/feed': { cache: { maxAge: 3600, staleMaxAge: 600 } },
+        '/api/events': { cache: { maxAge: 900, staleMaxAge: 300 } }
       }
     : {},
 
