@@ -113,7 +113,7 @@ useSeoMeta({
       <Motion
         as="header"
         v-bind="headerMotion"
-        class="relative overflow-hidden border-b border-default"
+        class="sticky top-0 z-50 overflow-hidden border-b border-default bg-background/80 backdrop-blur"
       >
         <SkyBg class="absolute inset-0" />
         <div class="relative mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
@@ -143,7 +143,7 @@ useSeoMeta({
                 {{ link.label }}
               </a>
             </nav>
-            <div class="flex flex-wrap items-center justify-center gap-2">
+            <div class="hidden flex-wrap items-center justify-center gap-2 sm:flex">
               <UButton
                 v-for="link in socialLinks"
                 :key="link.label"
@@ -163,7 +163,7 @@ useSeoMeta({
             class="mt-4 sm:hidden"
           >
             <UCard class="border border-white/10 bg-background/90">
-              <div class="flex flex-col gap-2">
+              <div class="grid grid-cols-2 gap-2">
                 <UButton
                   v-for="link in navLinks"
                   :key="link.href"
@@ -175,6 +175,20 @@ useSeoMeta({
                 >
                   {{ link.label }}
                 </UButton>
+              </div>
+              <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+                <UButton
+                  v-for="link in socialLinks"
+                  :key="link.label"
+                  :icon="link.icon"
+                  :to="link.to"
+                  :target="link.target"
+                  variant="link"
+                  color="neutral"
+                  size="sm"
+                  :aria-label="link.label"
+                  class="h-9 w-9"
+                />
               </div>
             </UCard>
           </div>
