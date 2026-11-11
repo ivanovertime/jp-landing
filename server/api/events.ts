@@ -56,7 +56,7 @@ export default defineEventHandler(async (event): Promise<EventsResponse> => {
   if (import.meta.dev) {
     setHeader(event, 'Cache-Control', 'no-store')
   } else {
-    setHeader(event, 'Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=600')
+    setHeader(event, 'Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=3600, stale-while-revalidate=600')
   }
 
   const config = useRuntimeConfig()
