@@ -35,6 +35,10 @@ type Messages = {
     albums: string
     singlesEmpty: string
     albumsEmpty: string
+    videos: string
+    shorts: string
+    videosEmpty: string
+    shortsEmpty: string
   }
   contactForm: {
     intro: string
@@ -111,7 +115,11 @@ const messages: Record<LocaleCode, Messages> = {
       singles: 'Singles',
       albums: 'Álbumes',
       singlesEmpty: 'Aún no hay singles disponibles.',
-      albumsEmpty: 'Aún no hay álbumes disponibles.'
+      albumsEmpty: 'Aún no hay álbumes disponibles.',
+      videos: 'Videos',
+      shorts: 'Shorts',
+      videosEmpty: 'Aún no hay videos disponibles.',
+      shortsEmpty: 'Aún no hay shorts disponibles.'
     },
     contactForm: {
       intro: '¿Quieres colaborar con Jhey Pi? Escríbenos un DM a {instagram} o email {email}.',
@@ -191,7 +199,11 @@ const messages: Record<LocaleCode, Messages> = {
       singles: 'Singles',
       albums: 'Albums',
       singlesEmpty: 'No singles available yet.',
-      albumsEmpty: 'No albums available yet.'
+      albumsEmpty: 'No albums available yet.',
+      videos: 'Videos',
+      shorts: 'Shorts',
+      videosEmpty: 'No videos available yet.',
+      shortsEmpty: 'No shorts available yet.'
     },
     contactForm: {
       intro: 'Want to collaborate with Jhey Pi? Send us a DM at {instagram} or email {email}.',

@@ -101,7 +101,8 @@ const linkIcons = {
 } satisfies Record<NonNullable<EventItem['links']>[number]['type'], string>
 
 const releases = computed(() => items.value.filter(item => item.provider === 'spotify'))
-const videos = computed(() => items.value.filter(item => item.provider === 'youtube'))
+const shorts = computed(() => items.value.filter(item => item.provider === 'youtube' && item.type === 'short'))
+const videos = computed(() => items.value.filter(item => item.provider === 'youtube' && item.type !== 'short'))
 
 const singles = computed(() => releases.value.filter(item => item.type === 'single'))
 const albums = computed(() => releases.value.filter(item => item.type !== 'single'))
@@ -113,13 +114,20 @@ const releaseTabs = computed(() => [
 ])
 const activeReleases = computed(() => releasesTab.value === 'singles' ? singles.value : albums.value)
 
+const videosTab = ref<'videos' | 'shorts'>('videos')
+const videoTabs = computed(() => [
+  { label: t('tabs.videos'), value: 'videos' },
+  { label: t('tabs.shorts'), value: 'shorts' }
+])
+const activeVideos = computed(() => videosTab.value === 'shorts' ? shorts.value : videos.value)
+
 const releasesPage = ref(1)
 const videosPage = ref(1)
 const releasesPerPage = 6
 const videosPerPage = 6
 
 const releasePageCount = computed(() => Math.max(1, Math.ceil(activeReleases.value.length / releasesPerPage)))
-const videoPageCount = computed(() => Math.max(1, Math.ceil(videos.value.length / videosPerPage)))
+const videoPageCount = computed(() => Math.max(1, Math.ceil(activeVideos.value.length / videosPerPage)))
 
 watchEffect(() => {
   if (releasesPage.value > releasePageCount.value) {
@@ -140,7 +148,7 @@ const pagedReleases = computed(() => {
 
 const pagedVideos = computed(() => {
   const start = (videosPage.value - 1) * videosPerPage
-  return videos.value.slice(start, start + videosPerPage)
+  return activeVideos.value.slice(start, start + videosPerPage)
 })
 
 const scrollToSectionById = async (sectionId: string) => {
@@ -168,6 +176,11 @@ const handleReleasesPageUpdate = (page: number) => {
 const handleReleasesTabUpdate = (value: string | number) => {
   releasesTab.value = value === 'albums' ? 'albums' : 'singles'
   releasesPage.value = 1
+}
+
+const handleVideosTabUpdate = (value: string | number) => {
+  videosTab.value = value === 'shorts' ? 'shorts' : 'videos'
+  videosPage.value = 1
 }
 
 const handleVideosPageUpdate = (page: number) => {
@@ -516,32 +529,51 @@ const formatEventDateRange = (item: EventItem) => {
         {{ t('errors.videos') }}
       </div>
 
-      <div v-else>
-        <UChangelogVersions
-          :key="videosPage"
-          :indicator-motion="{ damping: 26, restDelta: 0.001 }"
-          :versions="videoVersions"
-        >
-          <template #body="{ version }">
-            <div class="mt-6">
-              <EmbedFrame :item="version.item" />
-            </div>
-          </template>
-        </UChangelogVersions>
+      <div
+        v-else
+        class="flex flex-col gap-4"
+      >
+        <UTabs
+          :items="videoTabs"
+          :model-value="videosTab"
+          :content="false"
+          @update:model-value="handleVideosTabUpdate"
+        />
 
         <div
-          v-if="videoPageCount > 1"
-          class="mt-6 flex justify-center"
+          v-if="activeVideos.length === 0"
+          class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-muted"
         >
-          <UPagination
-            :page="videosPage"
-            :total="videos.length"
-            :items-per-page="videosPerPage"
-            size="sm"
-            :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
-            @update:page="handleVideosPageUpdate"
-          />
+          {{ t(videosTab === 'shorts' ? 'tabs.shortsEmpty' : 'tabs.videosEmpty') }}
         </div>
+
+        <template v-else>
+          <UChangelogVersions
+            :key="`${videosTab}-${videosPage}`"
+            :indicator-motion="{ damping: 26, restDelta: 0.001 }"
+            :versions="videoVersions"
+          >
+            <template #body="{ version }">
+              <div class="mt-6">
+                <EmbedFrame :item="version.item" />
+              </div>
+            </template>
+          </UChangelogVersions>
+
+          <div
+            v-if="videoPageCount > 1"
+            class="mt-6 flex justify-center"
+          >
+            <UPagination
+              :page="videosPage"
+              :total="activeVideos.length"
+              :items-per-page="videosPerPage"
+              size="sm"
+              :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
+              @update:page="handleVideosPageUpdate"
+            />
+          </div>
+        </template>
       </div>
     </Motion>
 

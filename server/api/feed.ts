@@ -92,13 +92,14 @@ async function fetchYouTubeItems({ channelUrl, channelId, limit = 24 }: YouTubeC
       const videoId = extractXmlValue(entry, 'yt:videoId')
       const title = extractXmlValue(entry, 'title')
       const published = extractXmlValue(entry, 'published')
+      const isShort = entry.includes('href="https://www.youtube.com/shorts/')
 
       return {
         id: `yt_${videoId}`,
         provider: 'youtube',
-        type: 'video',
+        type: isShort ? 'short' : 'video',
         embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
-        aspectRatio: '16/9',
+        aspectRatio: isShort ? '9/16' : '16/9',
         title,
         date: published
       }

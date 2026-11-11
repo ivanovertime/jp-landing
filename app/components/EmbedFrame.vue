@@ -43,7 +43,7 @@ const iframeAllow = computed(() => {
   <div class="rounded-2xl border border-default bg-default/60 shadow-sm">
     <div
       class="w-full overflow-hidden rounded-2xl bg-black/10"
-      :class="{ 'embed-spotify': item.provider === 'spotify' }"
+      :class="{ 'embed-spotify': item.provider === 'spotify', 'embed-short': item.provider === 'youtube' && item.type === 'short' }"
       :style="wrapperStyle"
     >
       <iframe
@@ -69,6 +69,12 @@ const iframeAllow = computed(() => {
 <style scoped>
 .embed-spotify {
   height: clamp(152px, 9vw, 200px);
+}
+
+.embed-short {
+  max-width: 300px;
+  margin-inline: auto;
+  width: 100%;
 }
 
 @media (min-width: 1440px) {
