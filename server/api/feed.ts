@@ -113,7 +113,7 @@ async function resolveYouTubeChannelId(channelUrl: string): Promise<string | nul
 
   try {
     const html = await fetchYouTubeHtml(channelUrl)
-    const match = html.match(/"channelId":"(UC[^"]+)"/)
+    const match = html.match(/"channelId":"(UC[^"]+)"/) || html.match(/"externalId":"(UC[^"]+)"/)
     if (match?.[1]) {
       return match[1]
     }
@@ -121,7 +121,7 @@ async function resolveYouTubeChannelId(channelUrl: string): Promise<string | nul
     const handleUrl = toYouTubeHandleUrl(channelUrl)
     if (handleUrl) {
       const handleHtml = await fetchYouTubeHtml(handleUrl)
-      const handleMatch = handleHtml.match(/"channelId":"(UC[^"]+)"/)
+      const handleMatch = handleHtml.match(/"channelId":"(UC[^"]+)"/) || handleHtml.match(/"externalId":"(UC[^"]+)"/)
       return handleMatch?.[1] ?? null
     }
 
