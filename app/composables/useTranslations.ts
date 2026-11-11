@@ -11,6 +11,7 @@ type Messages = {
   nav: {
     about: string
     releases: string
+    tracks: string
     videos: string
     events: string
     contact: string
@@ -19,12 +20,20 @@ type Messages = {
     aboutTitle: string
     releasesTitle: string
     releasesSubtitle: string
+    releasesEmpty: string
+    tracksTitle: string
+    tracksSubtitle: string
+    tracksEmpty: string
     videosTitle: string
     videosSubtitle: string
     eventsTitle: string
     eventsSubtitle: string
     eventsEmpty: string
     contactTitle: string
+  }
+  tabs: {
+    singles: string
+    albums: string
   }
   contactForm: {
     intro: string
@@ -41,12 +50,14 @@ type Messages = {
     official: string
     latestDrops: string
     latestClips: string
+    mostPlayed: string
     upcoming: string
   }
   labels: {
     when: string
     location: string
     links: string
+    followers: string
   }
   links: {
     calendar: string
@@ -61,6 +72,7 @@ type Messages = {
   }
   errors: {
     releases: string
+    tracks: string
     videos: string
     events: string
   }
@@ -75,6 +87,7 @@ const messages: Record<LocaleCode, Messages> = {
     nav: {
       about: 'Sobre mi',
       releases: 'Lanzamientos',
+      tracks: 'Lo más escuchado',
       videos: 'Videos',
       events: 'Eventos',
       contact: 'Contacto'
@@ -83,12 +96,20 @@ const messages: Record<LocaleCode, Messages> = {
       aboutTitle: 'Sobre mi',
       releasesTitle: 'Lanzamientos',
       releasesSubtitle: 'Embeds de Spotify · Actualizado cada hora',
+      releasesEmpty: 'Aún no hay lanzamientos disponibles.',
+      tracksTitle: 'Lo más escuchado',
+      tracksSubtitle: 'Tracks de Spotify · Actualizado cada hora',
+      tracksEmpty: 'Aún no hay tracks disponibles.',
       videosTitle: 'Videos',
       videosSubtitle: 'Embeds de YouTube · Actualizado cada hora',
       eventsTitle: 'Próximos eventos',
       eventsSubtitle: 'Agenda pública del artista · Actualizado cada hora',
       eventsEmpty: 'No hay eventos próximos en este momento.',
       contactTitle: 'Contacto'
+    },
+    tabs: {
+      singles: 'Singles',
+      albums: 'Álbumes'
     },
     contactForm: {
       intro: '¿Quieres colaborar con Jhey Pi? Escríbenos un DM a {instagram} o email {email}.',
@@ -105,12 +126,14 @@ const messages: Record<LocaleCode, Messages> = {
       official: 'Página oficial del artista',
       latestDrops: 'Últimos lanzamientos',
       latestClips: 'Últimos clips',
+      mostPlayed: 'Favoritos del público',
       upcoming: 'Próximamente'
     },
     labels: {
       when: 'Cuándo',
       location: 'Lugar',
-      links: 'Enlaces'
+      links: 'Enlaces',
+      followers: 'seguidores'
     },
     links: {
       calendar: 'Agendar en calendario',
@@ -130,6 +153,7 @@ const messages: Record<LocaleCode, Messages> = {
     },
     errors: {
       releases: 'No se pudieron cargar los lanzamientos en este momento.',
+      tracks: 'No se pudieron cargar los tracks en este momento.',
       videos: 'No se pudieron cargar los videos en este momento.',
       events: 'No se pudieron cargar los eventos en este momento.'
     },
@@ -142,6 +166,7 @@ const messages: Record<LocaleCode, Messages> = {
     nav: {
       about: 'About',
       releases: 'Releases',
+      tracks: 'Top tracks',
       videos: 'Videos',
       events: 'Events',
       contact: 'Contact'
@@ -150,12 +175,20 @@ const messages: Record<LocaleCode, Messages> = {
       aboutTitle: 'About',
       releasesTitle: 'Releases',
       releasesSubtitle: 'Spotify embeds · Updated hourly',
+      releasesEmpty: 'No releases available yet.',
+      tracksTitle: 'Top tracks',
+      tracksSubtitle: 'Spotify tracks · Updated hourly',
+      tracksEmpty: 'No tracks available yet.',
       videosTitle: 'Videos',
       videosSubtitle: 'YouTube embeds · Updated hourly',
       eventsTitle: 'Upcoming events',
       eventsSubtitle: 'Public artist calendar · Updated hourly',
       eventsEmpty: 'No upcoming events right now.',
       contactTitle: 'Contact'
+    },
+    tabs: {
+      singles: 'Singles',
+      albums: 'Albums'
     },
     contactForm: {
       intro: 'Want to collaborate with Jhey Pi? Send us a DM at {instagram} or email {email}.',
@@ -172,12 +205,14 @@ const messages: Record<LocaleCode, Messages> = {
       official: 'Official artist page',
       latestDrops: 'Latest drops',
       latestClips: 'Latest clips',
+      mostPlayed: 'Fan favorites',
       upcoming: 'Upcoming'
     },
     labels: {
       when: 'When',
       location: 'Location',
-      links: 'Links'
+      links: 'Links',
+      followers: 'followers'
     },
     links: {
       calendar: 'Add to calendar',
@@ -197,6 +232,7 @@ const messages: Record<LocaleCode, Messages> = {
     },
     errors: {
       releases: 'Unable to load releases right now.',
+      tracks: 'Unable to load tracks right now.',
       videos: 'Unable to load videos right now.',
       events: 'Unable to load events right now.'
     },

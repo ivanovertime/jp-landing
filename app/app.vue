@@ -52,6 +52,7 @@ const footerMotion = {
 const navLinks = computed(() => [
   { label: t('nav.about'), href: '#section-about' },
   { label: t('nav.releases'), href: '#section-releases' },
+  { label: t('nav.tracks'), href: '#section-tracks' },
   { label: t('nav.videos'), href: '#section-videos' },
   { label: t('nav.events'), href: '#section-events' },
   { label: t('nav.contact'), href: '#section-contact' }
