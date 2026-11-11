@@ -49,6 +49,7 @@ const iframeAllow = computed(() => {
       <iframe
         class="h-full w-full"
         :src="item.embedUrl"
+        :title="item.title || item.type"
         loading="lazy"
         frameborder="0"
         allowfullscreen

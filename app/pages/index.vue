@@ -50,6 +50,7 @@ const { data: feed, pending, error, refresh: refreshFeed } = await useFetch<Feed
   default: () => ({
     updatedAt: '',
     items: [],
+    topTracks: [],
     artist: undefined
   })
 })
@@ -72,11 +73,11 @@ const { locale, t, tArray } = useTranslations()
 const aboutCopy = computed(() => tArray('copy.about'))
 
 const followersCount = computed(() => {
-  if (!artist.value) {
+  if (!Number.isFinite(artist.value?.followers)) {
     return ''
   }
 
-  return new Intl.NumberFormat(locale.value === 'en' ? 'en-US' : 'es-ES').format(artist.value.followers)
+  return new Intl.NumberFormat(locale.value === 'en' ? 'en-US' : 'es-ES').format(artist.value!.followers)
 })
 
 const artistGenres = computed(() => (artist.value?.genres ?? [])
@@ -304,7 +305,10 @@ const formatEventDateRange = (item: EventItem) => {
       <div class="flex flex-col gap-6">
         <div class="flex flex-wrap items-center gap-6">
           <div class="flex w-full flex-col items-center gap-5 text-center sm:w-auto sm:flex-row-reverse sm:items-center sm:text-left">
-            <div class="h-64 w-64 overflow-hidden rounded-full ring-2 ring-primary/40 shadow-lg">
+            <div
+              v-if="artist?.images?.[0]"
+              class="h-64 w-64 overflow-hidden rounded-full ring-2 ring-primary/40 shadow-lg"
+            >
               <img
                 v-if="artist?.images?.[0]"
                 :src="artist.images[0].url"
@@ -400,7 +404,7 @@ const formatEventDateRange = (item: EventItem) => {
           v-if="activeReleases.length === 0"
           class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-muted"
         >
-          {{ t('section.releasesEmpty') }}
+          {{ t(releasesTab === 'singles' ? 'tabs.singlesEmpty' : 'tabs.albumsEmpty') }}
         </div>
 
         <template v-else>

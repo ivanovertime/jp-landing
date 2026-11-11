@@ -20,7 +20,6 @@ type Messages = {
     aboutTitle: string
     releasesTitle: string
     releasesSubtitle: string
-    releasesEmpty: string
     tracksTitle: string
     tracksSubtitle: string
     tracksEmpty: string
@@ -34,6 +33,8 @@ type Messages = {
   tabs: {
     singles: string
     albums: string
+    singlesEmpty: string
+    albumsEmpty: string
   }
   contactForm: {
     intro: string
@@ -96,7 +97,6 @@ const messages: Record<LocaleCode, Messages> = {
       aboutTitle: 'Sobre mi',
       releasesTitle: 'Lanzamientos',
       releasesSubtitle: 'Embeds de Spotify · Actualizado cada hora',
-      releasesEmpty: 'Aún no hay lanzamientos disponibles.',
       tracksTitle: 'Lo más escuchado',
       tracksSubtitle: 'Tracks de Spotify · Actualizado cada hora',
       tracksEmpty: 'Aún no hay tracks disponibles.',
@@ -109,7 +109,9 @@ const messages: Record<LocaleCode, Messages> = {
     },
     tabs: {
       singles: 'Singles',
-      albums: 'Álbumes'
+      albums: 'Álbumes',
+      singlesEmpty: 'Aún no hay singles disponibles.',
+      albumsEmpty: 'Aún no hay álbumes disponibles.'
     },
     contactForm: {
       intro: '¿Quieres colaborar con Jhey Pi? Escríbenos un DM a {instagram} o email {email}.',
@@ -175,7 +177,6 @@ const messages: Record<LocaleCode, Messages> = {
       aboutTitle: 'About',
       releasesTitle: 'Releases',
       releasesSubtitle: 'Spotify embeds · Updated hourly',
-      releasesEmpty: 'No releases available yet.',
       tracksTitle: 'Top tracks',
       tracksSubtitle: 'Spotify tracks · Updated hourly',
       tracksEmpty: 'No tracks available yet.',
@@ -188,7 +189,9 @@ const messages: Record<LocaleCode, Messages> = {
     },
     tabs: {
       singles: 'Singles',
-      albums: 'Albums'
+      albums: 'Albums',
+      singlesEmpty: 'No singles available yet.',
+      albumsEmpty: 'No albums available yet.'
     },
     contactForm: {
       intro: 'Want to collaborate with Jhey Pi? Send us a DM at {instagram} or email {email}.',
