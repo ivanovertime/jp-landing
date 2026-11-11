@@ -53,8 +53,11 @@ const { data: feed, pending, error, refresh: refreshFeed } = await useFetch<Feed
   })
 })
 
+const eventsEnabled = useRuntimeConfig().public.eventsEnabled === true
+
 const { data: eventsFeed, pending: eventsPending, error: eventsError, refresh: refreshEvents } = await useFetch<EventsResponse>('/api/events', {
   key: 'events',
+  immediate: eventsEnabled,
   default: () => ({
     updatedAt: '',
     items: []
@@ -66,8 +69,19 @@ const items = computed(() => feed.value?.items ?? [])
 const artist = computed(() => feed.value?.artist ?? null)
 const events = computed(() => eventsFeed.value?.items ?? [])
 
-const { t, tArray } = useTranslations()
+const { locale, t, tArray } = useTranslations()
 const aboutCopy = computed(() => tArray('copy.about'))
+
+const followersCount = computed(() => {
+  if (!Number.isFinite(artist.value?.followers)) {
+    return ''
+  }
+
+  return new Intl.NumberFormat(locale.value === 'en' ? 'en-US' : 'es-ES').format(artist.value!.followers)
+})
+
+const artistGenres = computed(() => (artist.value?.genres ?? [])
+  .map(genre => genre.charAt(0).toUpperCase() + genre.slice(1)))
 const linkLabels = computed(() => ({
   calendar: t('links.calendar'),
   live: t('links.live'),
@@ -87,15 +101,37 @@ const linkIcons = {
 } satisfies Record<NonNullable<EventItem['links']>[number]['type'], string>
 
 const releases = computed(() => items.value.filter(item => item.provider === 'spotify'))
-const videos = computed(() => items.value.filter(item => item.provider === 'youtube'))
+const shorts = computed(() => items.value.filter(item => item.provider === 'youtube' && item.type === 'short'))
+const youtubeVideos = computed(() => items.value.filter(item => item.provider === 'youtube' && item.type === 'video'))
+
+const releaseToVideo = computed(() => matchReleasesToVideos(releases.value, youtubeVideos.value))
+const matchedVideoIds = computed(() => new Set([...releaseToVideo.value.values()].map(video => video.id)))
+const videos = computed(() => youtubeVideos.value.filter(video => !matchedVideoIds.value.has(video.id)))
+
+const singles = computed(() => releases.value.filter(item => item.type === 'single'))
+const albums = computed(() => releases.value.filter(item => item.type !== 'single'))
+
+const releasesTab = ref<'singles' | 'albums'>('singles')
+const releaseTabs = computed(() => [
+  { label: t('tabs.singles'), value: 'singles' },
+  { label: t('tabs.albums'), value: 'albums' }
+])
+const activeReleases = computed(() => releasesTab.value === 'singles' ? singles.value : albums.value)
+
+const videosTab = ref<'videos' | 'shorts'>('videos')
+const videoTabs = computed(() => [
+  { label: t('tabs.videos'), value: 'videos' },
+  { label: t('tabs.shorts'), value: 'shorts' }
+])
+const activeVideos = computed(() => videosTab.value === 'shorts' ? shorts.value : videos.value)
 
 const releasesPage = ref(1)
 const videosPage = ref(1)
 const releasesPerPage = 6
 const videosPerPage = 6
 
-const releasePageCount = computed(() => Math.max(1, Math.ceil(releases.value.length / releasesPerPage)))
-const videoPageCount = computed(() => Math.max(1, Math.ceil(videos.value.length / videosPerPage)))
+const releasePageCount = computed(() => Math.max(1, Math.ceil(activeReleases.value.length / releasesPerPage)))
+const videoPageCount = computed(() => Math.max(1, Math.ceil(activeVideos.value.length / videosPerPage)))
 
 watchEffect(() => {
   if (releasesPage.value > releasePageCount.value) {
@@ -111,12 +147,12 @@ watchEffect(() => {
 
 const pagedReleases = computed(() => {
   const start = (releasesPage.value - 1) * releasesPerPage
-  return releases.value.slice(start, start + releasesPerPage)
+  return activeReleases.value.slice(start, start + releasesPerPage)
 })
 
 const pagedVideos = computed(() => {
   const start = (videosPage.value - 1) * videosPerPage
-  return videos.value.slice(start, start + videosPerPage)
+  return activeVideos.value.slice(start, start + videosPerPage)
 })
 
 const scrollToSectionById = async (sectionId: string) => {
@@ -139,6 +175,16 @@ const scrollToSectionById = async (sectionId: string) => {
 const handleReleasesPageUpdate = (page: number) => {
   releasesPage.value = page
   scrollToSectionById('section-releases')
+}
+
+const handleReleasesTabUpdate = (value: string | number) => {
+  releasesTab.value = value === 'albums' ? 'albums' : 'singles'
+  releasesPage.value = 1
+}
+
+const handleVideosTabUpdate = (value: string | number) => {
+  videosTab.value = value === 'shorts' ? 'shorts' : 'videos'
+  videosPage.value = 1
 }
 
 const handleVideosPageUpdate = (page: number) => {
@@ -189,11 +235,13 @@ const handleContactSubmit = () => {
 }
 
 onMounted(() => {
-  refreshEvents()
+  if (eventsEnabled) {
+    refreshEvents()
+  }
   refreshFeed()
 })
 
-type MediaVersion = ChangelogVersionProps & { item: FeedItem }
+type MediaVersion = ChangelogVersionProps & { item: FeedItem, video?: FeedItem }
 
 const releaseVersions = computed<MediaVersion[]>(() =>
   pagedReleases.value
@@ -204,6 +252,7 @@ const releaseVersions = computed<MediaVersion[]>(() =>
       date: item.date || feed.value?.updatedAt || new Date().toISOString(),
       // badge: 'Release',
       item,
+      video: releaseToVideo.value.get(item.id),
       ui: {
         container: 'max-w-none'
       }
@@ -276,7 +325,10 @@ const formatEventDateRange = (item: EventItem) => {
       <div class="flex flex-col gap-6">
         <div class="flex flex-wrap items-center gap-6">
           <div class="flex w-full flex-col items-center gap-5 text-center sm:w-auto sm:flex-row-reverse sm:items-center sm:text-left">
-            <div class="h-64 w-64 overflow-hidden rounded-full ring-2 ring-primary/40 shadow-lg">
+            <div
+              v-if="artist?.images?.[0]"
+              class="h-64 w-64 overflow-hidden rounded-full ring-2 ring-primary/40 shadow-lg"
+            >
               <img
                 v-if="artist?.images?.[0]"
                 :src="artist.images[0].url"
@@ -295,6 +347,23 @@ const formatEventDateRange = (item: EventItem) => {
               <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">
                 {{ artist?.name || 'Jhey Pi' }}
               </h1>
+              <div
+                v-if="artist"
+                class="flex flex-wrap items-center justify-center gap-2 sm:justify-start"
+              >
+                <span class="text-sm text-muted">
+                  {{ followersCount }} {{ t('labels.followers') }}
+                </span>
+                <UBadge
+                  v-for="genre in artistGenres"
+                  :key="genre"
+                  color="neutral"
+                  variant="outline"
+                  size="sm"
+                >
+                  {{ genre }}
+                </UBadge>
+              </div>
               <div class="max-w-2xl text-sm text-muted sm:text-base">
                 <p
                   v-for="(paragraph, index) in aboutCopy"
@@ -340,32 +409,56 @@ const formatEventDateRange = (item: EventItem) => {
         {{ t('errors.releases') }}
       </div>
 
-      <div v-else>
-        <UChangelogVersions
-          :key="releasesPage"
-          :indicator-motion="{ damping: 26, restDelta: 0.001 }"
-          :versions="releaseVersions"
-        >
-          <template #body="{ version }">
-            <div class="mt-6">
-              <EmbedFrame :item="version.item" />
-            </div>
-          </template>
-        </UChangelogVersions>
+      <div
+        v-else
+        class="flex flex-col gap-4"
+      >
+        <UTabs
+          :items="releaseTabs"
+          :model-value="releasesTab"
+          :content="false"
+          @update:model-value="handleReleasesTabUpdate"
+        />
 
         <div
-          v-if="releasePageCount > 1"
-          class="mt-6 flex justify-center"
+          v-if="activeReleases.length === 0"
+          class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-muted"
         >
-          <UPagination
-            :page="releasesPage"
-            :total="releases.length"
-            :items-per-page="releasesPerPage"
-            size="sm"
-            :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
-            @update:page="handleReleasesPageUpdate"
-          />
+          {{ t(releasesTab === 'singles' ? 'tabs.singlesEmpty' : 'tabs.albumsEmpty') }}
         </div>
+
+        <template v-else>
+          <UChangelogVersions
+            :key="`${releasesTab}-${releasesPage}`"
+            :indicator-motion="{ damping: 26, restDelta: 0.001 }"
+            :versions="releaseVersions"
+          >
+            <template #body="{ version }">
+              <div class="mt-6">
+                <EmbedFrame :item="version.item" />
+                <EmbedFrame
+                  v-if="version.video"
+                  :item="version.video"
+                  class="mt-2"
+                />
+              </div>
+            </template>
+          </UChangelogVersions>
+
+          <div
+            v-if="releasePageCount > 1"
+            class="mt-6 flex justify-center"
+          >
+            <UPagination
+              :page="releasesPage"
+              :total="activeReleases.length"
+              :items-per-page="releasesPerPage"
+              size="sm"
+              :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
+              @update:page="handleReleasesPageUpdate"
+            />
+          </div>
+        </template>
       </div>
     </Motion>
 
@@ -399,36 +492,56 @@ const formatEventDateRange = (item: EventItem) => {
         {{ t('errors.videos') }}
       </div>
 
-      <div v-else>
-        <UChangelogVersions
-          :key="videosPage"
-          :indicator-motion="{ damping: 26, restDelta: 0.001 }"
-          :versions="videoVersions"
-        >
-          <template #body="{ version }">
-            <div class="mt-6">
-              <EmbedFrame :item="version.item" />
-            </div>
-          </template>
-        </UChangelogVersions>
+      <div
+        v-else
+        class="flex flex-col gap-4"
+      >
+        <UTabs
+          :items="videoTabs"
+          :model-value="videosTab"
+          :content="false"
+          @update:model-value="handleVideosTabUpdate"
+        />
 
         <div
-          v-if="videoPageCount > 1"
-          class="mt-6 flex justify-center"
+          v-if="activeVideos.length === 0"
+          class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-muted"
         >
-          <UPagination
-            :page="videosPage"
-            :total="videos.length"
-            :items-per-page="videosPerPage"
-            size="sm"
-            :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
-            @update:page="handleVideosPageUpdate"
-          />
+          {{ t(videosTab === 'shorts' ? 'tabs.shortsEmpty' : 'tabs.videosEmpty') }}
         </div>
+
+        <template v-else>
+          <UChangelogVersions
+            :key="`${videosTab}-${videosPage}`"
+            :indicator-motion="{ damping: 26, restDelta: 0.001 }"
+            :versions="videoVersions"
+          >
+            <template #body="{ version }">
+              <div class="mt-6">
+                <EmbedFrame :item="version.item" />
+              </div>
+            </template>
+          </UChangelogVersions>
+
+          <div
+            v-if="videoPageCount > 1"
+            class="mt-6 flex justify-center"
+          >
+            <UPagination
+              :page="videosPage"
+              :total="activeVideos.length"
+              :items-per-page="videosPerPage"
+              size="sm"
+              :ui="{ item: 'cursor-pointer', first: 'cursor-pointer', prev: 'cursor-pointer', next: 'cursor-pointer', last: 'cursor-pointer', ellipsis: 'cursor-pointer' }"
+              @update:page="handleVideosPageUpdate"
+            />
+          </div>
+        </template>
       </div>
     </Motion>
 
     <Motion
+      v-if="eventsEnabled"
       id="section-events"
       as="section"
       v-bind="sectionMotion"

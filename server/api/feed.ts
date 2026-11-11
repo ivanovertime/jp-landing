@@ -28,7 +28,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   const maxYoutubeItems = Number(query.youtubeLimit || config.maxYoutubeItems || 24)
   const maxSpotifyItems = Number(query.spotifyLimit || config.maxSpotifyItems || 24)
 
-  const youtubeItems = await fetchYouTubeItems({
+  const { items: youtubeItems } = await fetchYouTubeItems({
     channelUrl: config.youtubeChannelUrl,
     channelId: config.youtubeChannelId,
     limit: maxYoutubeItems
@@ -73,35 +73,38 @@ type YouTubeConfig = {
   limit?: number
 }
 
-async function fetchYouTubeItems({ channelUrl, channelId, limit = 24 }: YouTubeConfig): Promise<FeedItem[]> {
+async function fetchYouTubeItems({ channelUrl, channelId, limit = 24 }: YouTubeConfig): Promise<{ items: FeedItem[], channelId: string | null }> {
   try {
     const resolvedChannelId = channelId || await resolveYouTubeChannelId(channelUrl)
     if (!resolvedChannelId) {
-      return []
+      return { items: [], channelId: null }
     }
 
     const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${resolvedChannelId}`
     const xml = await $fetch<string>(feedUrl, { responseType: 'text' })
     const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].slice(0, limit)
 
-    return entries.map((match) => {
+    const items = entries.map<FeedItem>((match) => {
       const entry = match[1] ?? ''
       const videoId = extractXmlValue(entry, 'yt:videoId')
       const title = extractXmlValue(entry, 'title')
       const published = extractXmlValue(entry, 'published')
+      const isShort = entry.includes('href="https://www.youtube.com/shorts/')
 
       return {
         id: `yt_${videoId}`,
         provider: 'youtube',
-        type: 'video',
+        type: isShort ? 'short' : 'video',
         embedUrl: `https://www.youtube-nocookie.com/embed/${videoId}`,
-        aspectRatio: '16/9',
+        aspectRatio: isShort ? '9/16' : '16/9',
         title,
         date: published
       }
     })
+
+    return { items, channelId: resolvedChannelId }
   } catch {
-    return []
+    return { items: [], channelId: null }
   }
 }
 
@@ -163,6 +166,7 @@ type SpotifyConfig = {
 
 type SpotifyTokenResponse = {
   access_token: string
+  expires_in: number
 }
 
 type SpotifyArtist = {
@@ -179,6 +183,7 @@ type SpotifyAlbumsResponse = {
     id: string
     name: string
     release_date: string
+    album_type: string
   }[]
   next: string | null
 }
@@ -208,7 +213,7 @@ async function fetchSpotifyItems({ clientId, clientSecret, artistId }: SpotifyCo
         ...albums.items.map<FeedItem>(album => ({
           id: `sp_${album.id}`,
           provider: 'spotify',
-          type: 'album',
+          type: album.album_type || 'album',
           embedUrl: `https://open.spotify.com/embed/album/${album.id}`,
           height: '152px',
           title: album.name,
@@ -262,7 +267,13 @@ async function fetchSpotifyArtist({ clientId, clientSecret, artistId }: SpotifyC
   }
 }
 
+let cachedToken: { value: string, expiresAt: number } | null = null
+
 async function fetchSpotifyToken(clientId: string, clientSecret: string): Promise<string> {
+  if (cachedToken && Date.now() < cachedToken.expiresAt) {
+    return cachedToken.value
+  }
+
   const credentials = toBase64(`${clientId}:${clientSecret}`)
   const body = new URLSearchParams({ grant_type: 'client_credentials' })
 
@@ -275,7 +286,12 @@ async function fetchSpotifyToken(clientId: string, clientSecret: string): Promis
     body
   })
 
-  return response.access_token
+  cachedToken = {
+    value: response.access_token,
+    expiresAt: Date.now() + response.expires_in * 1000 - 60000
+  }
+
+  return cachedToken.value
 }
 
 function toBase64(value: string): string {

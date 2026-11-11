@@ -26,6 +26,16 @@ type Messages = {
     eventsEmpty: string
     contactTitle: string
   }
+  tabs: {
+    singles: string
+    albums: string
+    singlesEmpty: string
+    albumsEmpty: string
+    videos: string
+    shorts: string
+    videosEmpty: string
+    shortsEmpty: string
+  }
   contactForm: {
     intro: string
     nameLabel: string
@@ -47,6 +57,7 @@ type Messages = {
     when: string
     location: string
     links: string
+    followers: string
   }
   links: {
     calendar: string
@@ -82,13 +93,23 @@ const messages: Record<LocaleCode, Messages> = {
     section: {
       aboutTitle: 'Sobre mi',
       releasesTitle: 'Lanzamientos',
-      releasesSubtitle: 'Embeds de Spotify · Actualizado cada hora',
+      releasesSubtitle: 'Embeds de Spotify',
       videosTitle: 'Videos',
-      videosSubtitle: 'Embeds de YouTube · Actualizado cada hora',
+      videosSubtitle: 'Embeds de YouTube',
       eventsTitle: 'Próximos eventos',
-      eventsSubtitle: 'Agenda pública del artista · Actualizado cada hora',
+      eventsSubtitle: 'Agenda pública del artista',
       eventsEmpty: 'No hay eventos próximos en este momento.',
       contactTitle: 'Contacto'
+    },
+    tabs: {
+      singles: 'Singles',
+      albums: 'Álbumes',
+      singlesEmpty: 'Aún no hay singles disponibles.',
+      albumsEmpty: 'Aún no hay álbumes disponibles.',
+      videos: 'Videos',
+      shorts: 'Shorts',
+      videosEmpty: 'Aún no hay videos disponibles.',
+      shortsEmpty: 'Aún no hay shorts disponibles.'
     },
     contactForm: {
       intro: '¿Quieres colaborar con Jhey Pi? Escríbenos un DM a {instagram} o email {email}.',
@@ -110,7 +131,8 @@ const messages: Record<LocaleCode, Messages> = {
     labels: {
       when: 'Cuándo',
       location: 'Lugar',
-      links: 'Enlaces'
+      links: 'Enlaces',
+      followers: 'seguidores'
     },
     links: {
       calendar: 'Agendar en calendario',
@@ -149,13 +171,23 @@ const messages: Record<LocaleCode, Messages> = {
     section: {
       aboutTitle: 'About',
       releasesTitle: 'Releases',
-      releasesSubtitle: 'Spotify embeds · Updated hourly',
+      releasesSubtitle: 'Spotify embeds',
       videosTitle: 'Videos',
-      videosSubtitle: 'YouTube embeds · Updated hourly',
+      videosSubtitle: 'YouTube embeds',
       eventsTitle: 'Upcoming events',
-      eventsSubtitle: 'Public artist calendar · Updated hourly',
+      eventsSubtitle: 'Public artist calendar',
       eventsEmpty: 'No upcoming events right now.',
       contactTitle: 'Contact'
+    },
+    tabs: {
+      singles: 'Singles',
+      albums: 'Albums',
+      singlesEmpty: 'No singles available yet.',
+      albumsEmpty: 'No albums available yet.',
+      videos: 'Videos',
+      shorts: 'Shorts',
+      videosEmpty: 'No videos available yet.',
+      shortsEmpty: 'No shorts available yet.'
     },
     contactForm: {
       intro: 'Want to collaborate with Jhey Pi? Send us a DM at {instagram} or email {email}.',
@@ -177,7 +209,8 @@ const messages: Record<LocaleCode, Messages> = {
     labels: {
       when: 'When',
       location: 'Location',
-      links: 'Links'
+      links: 'Links',
+      followers: 'followers'
     },
     links: {
       calendar: 'Add to calendar',

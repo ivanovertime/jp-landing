@@ -62,7 +62,12 @@ export default defineEventHandler(async (event): Promise<EventsResponse> => {
   const config = useRuntimeConfig()
   const nowIso = new Date().toISOString()
   const query = getQuery(event)
-  const debugEnabled = query.debug === '1' || query.debug === 'true'
+  const debugEnabled = (query.debug === '1' || query.debug === 'true')
+    && Boolean(config.debugSecret && query.secret === config.debugSecret)
+
+  if (debugEnabled) {
+    setHeader(event, 'Cache-Control', 'no-store')
+  }
 
   if (!config.googleCalendarApiKey || !config.googleCalendarId) {
     return {
@@ -97,6 +102,7 @@ export default defineEventHandler(async (event): Promise<EventsResponse> => {
   }
 
   const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?${params.toString()}`
+  const redactedUrl = url.replace(/key=[^&]+/, 'key=***')
 
   try {
     const response = await $fetch<GoogleCalendarResponse>(url)
@@ -128,7 +134,7 @@ export default defineEventHandler(async (event): Promise<EventsResponse> => {
             hasApiKey: Boolean(config.googleCalendarApiKey),
             hasCalendarId: Boolean(config.googleCalendarId),
             calendarId: config.googleCalendarId,
-            url,
+            url: redactedUrl,
             responseItems: response.items?.length ?? 0,
             normalizedItems: items.length
           }
@@ -143,7 +149,7 @@ export default defineEventHandler(async (event): Promise<EventsResponse> => {
             hasApiKey: Boolean(config.googleCalendarApiKey),
             hasCalendarId: Boolean(config.googleCalendarId),
             calendarId: config.googleCalendarId || undefined,
-            url,
+            url: redactedUrl,
             errorStatus: (error as { response?: { status?: number } })?.response?.status,
             errorData: (error as { data?: unknown })?.data
           }
