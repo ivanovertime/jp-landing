@@ -47,7 +47,8 @@ export default defineNuxtConfig({
       maxSpotifyItems: env.MAX_SPOTIFY_ITEMS || '24',
       googleCalendarApiKey: env.GOOGLE_CALENDAR_API_KEY || env.GOOGLE_API_KEY || '',
       googleCalendarId: env.GOOGLE_CALENDAR_ID || '',
-      googleCalendarTimeZone: env.GOOGLE_CALENDAR_TIMEZONE || env.GOOGLE_CALENDAR_TZ || ''
+      googleCalendarTimeZone: env.GOOGLE_CALENDAR_TIMEZONE || env.GOOGLE_CALENDAR_TZ || '',
+      debugSecret: env.DEBUG_SECRET || ''
     }
   })(),
   dir: {

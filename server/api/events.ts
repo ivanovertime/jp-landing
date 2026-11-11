@@ -62,7 +62,10 @@ export default defineEventHandler(async (event): Promise<EventsResponse> => {
   const config = useRuntimeConfig()
   const nowIso = new Date().toISOString()
   const query = getQuery(event)
-  const debugEnabled = query.debug === '1' || query.debug === 'true'
+  const debugRequested = query.debug === '1' || query.debug === 'true'
+  const debugAuthorized = import.meta.dev
+    || Boolean(config.debugSecret && query.secret === config.debugSecret)
+  const debugEnabled = debugRequested && debugAuthorized
 
   if (!config.googleCalendarApiKey || !config.googleCalendarId) {
     return {
