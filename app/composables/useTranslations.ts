@@ -18,6 +18,7 @@ type Messages = {
   }
   section: {
     aboutTitle: string
+    bioTitle: string
     releasesTitle: string
     releasesSubtitle: string
     tracksTitle: string
@@ -99,6 +100,7 @@ const messages: Record<LocaleCode, Messages> = {
     },
     section: {
       aboutTitle: 'Sobre mi',
+      bioTitle: 'Biografía',
       releasesTitle: 'Lanzamientos',
       releasesSubtitle: 'Embeds de Spotify · Actualizado cada hora',
       tracksTitle: 'Lo más escuchado',
@@ -183,6 +185,7 @@ const messages: Record<LocaleCode, Messages> = {
     },
     section: {
       aboutTitle: 'About',
+      bioTitle: 'Bio',
       releasesTitle: 'Releases',
       releasesSubtitle: 'Spotify embeds · Updated hourly',
       tracksTitle: 'Top tracks',

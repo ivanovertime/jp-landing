@@ -14,6 +14,7 @@ type FeedResponse = {
   items: FeedItem[]
   artist?: SpotifyArtist
   topTracks: FeedItem[]
+  channelDescription: string
 }
 
 export default defineEventHandler(async (event): Promise<FeedResponse> => {
@@ -29,7 +30,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   const maxYoutubeItems = Number(query.youtubeLimit || config.maxYoutubeItems || 24)
   const maxSpotifyItems = Number(query.spotifyLimit || config.maxSpotifyItems || 24)
 
-  const youtubeItems = await fetchYouTubeItems({
+  const { items: youtubeItems, channelId: youtubeChannelId } = await fetchYouTubeItems({
     channelUrl: config.youtubeChannelUrl,
     channelId: config.youtubeChannelId,
     limit: maxYoutubeItems
@@ -47,6 +48,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
 
   const spotifyArtist = await fetchSpotifyArtist(spotifyConfig)
   const topTracks = await fetchSpotifyTopTracks(spotifyConfig)
+  const channelDescription = await fetchYouTubeChannelDescription(config.youtubeApiKey, youtubeChannelId)
 
   const nowIso = new Date().toISOString()
   const normalizedItems = items
@@ -66,7 +68,8 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
     updatedAt: new Date().toISOString(),
     items: normalizedItems,
     artist: spotifyArtist || undefined,
-    topTracks
+    topTracks,
+    channelDescription
   }
 })
 
@@ -76,18 +79,18 @@ type YouTubeConfig = {
   limit?: number
 }
 
-async function fetchYouTubeItems({ channelUrl, channelId, limit = 24 }: YouTubeConfig): Promise<FeedItem[]> {
+async function fetchYouTubeItems({ channelUrl, channelId, limit = 24 }: YouTubeConfig): Promise<{ items: FeedItem[], channelId: string | null }> {
   try {
     const resolvedChannelId = channelId || await resolveYouTubeChannelId(channelUrl)
     if (!resolvedChannelId) {
-      return []
+      return { items: [], channelId: null }
     }
 
     const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${resolvedChannelId}`
     const xml = await $fetch<string>(feedUrl, { responseType: 'text' })
     const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].slice(0, limit)
 
-    return entries.map((match) => {
+    const items = entries.map<FeedItem>((match) => {
       const entry = match[1] ?? ''
       const videoId = extractXmlValue(entry, 'yt:videoId')
       const title = extractXmlValue(entry, 'title')
@@ -104,8 +107,26 @@ async function fetchYouTubeItems({ channelUrl, channelId, limit = 24 }: YouTubeC
         date: published
       }
     })
+
+    return { items, channelId: resolvedChannelId }
   } catch {
-    return []
+    return { items: [], channelId: null }
+  }
+}
+
+async function fetchYouTubeChannelDescription(apiKey: string, channelId: string | null): Promise<string> {
+  if (!apiKey || !channelId) {
+    return ''
+  }
+
+  try {
+    const response = await $fetch<{ items?: { snippet?: { description?: string } }[] }>(
+      `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${apiKey}`
+    )
+
+    return response.items?.[0]?.snippet?.description?.trim() || ''
+  } catch {
+    return ''
   }
 }
 
