@@ -32,16 +32,49 @@ const FILLER_TOKENS = new Set([
 ])
 
 /**
- * Lowercase, strip diacritics, reduce to alphanumeric tokens and drop filler.
+ * Characters that act as letters in stylized or borrowed spellings. They must
+ * transliterate to their Latin equivalent instead of splitting the word:
+ * "DU△LMA" has to become "dualma", not "du lma".
+ */
+const TRANSLITERATIONS: Record<string, string> = {
+  '△': 'a',
+  '▲': 'a',
+  'ø': 'o',
+  'Ø': 'o',
+  'ł': 'l',
+  'Ł': 'l',
+  'đ': 'd',
+  'Đ': 'd',
+  'ħ': 'h',
+  'ŧ': 't',
+  'ß': 'ss',
+  'æ': 'ae',
+  'œ': 'oe',
+  'ı': 'i'
+}
+
+function transliterate(value: string): string {
+  let result = ''
+
+  for (const char of value) {
+    result += TRANSLITERATIONS[char] ?? char
+  }
+
+  return result
+}
+
+/**
+ * Lowercase, transliterate stylized letters, strip diacritics, reduce to
+ * alphanumeric tokens and drop filler.
  *
  * Examples:
  * - "Making LUV (Video Oficial)" -> ["making", "luv"]
  * - "COÑO GIRLA" -> ["cono", "girla"]
+ * - "DU△LMA - JHEY PI" -> ["dualma", "jhey", "pi"]
  * - "Pirense. Jhey Pi + Indigo 457..." -> ["pirense", "jhey", "pi", ...]
  */
 export function normalizeTitle(title: string): string[] {
-  const normalized = title
-    .toLowerCase()
+  const normalized = transliterate(title.toLowerCase())
     .normalize('NFD')
     .replace(/[\u0300-\u036F]/g, '')
     .replace(/\ben\s+vivo\b/g, ' ')

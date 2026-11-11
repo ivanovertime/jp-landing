@@ -18,9 +18,7 @@ type Messages = {
   section: {
     aboutTitle: string
     releasesTitle: string
-    releasesSubtitle: string
     videosTitle: string
-    videosSubtitle: string
     eventsTitle: string
     eventsSubtitle: string
     eventsEmpty: string
@@ -93,9 +91,7 @@ const messages: Record<LocaleCode, Messages> = {
     section: {
       aboutTitle: 'Sobre mi',
       releasesTitle: 'Lanzamientos',
-      releasesSubtitle: 'Embeds de Spotify',
       videosTitle: 'Videos',
-      videosSubtitle: 'Embeds de YouTube',
       eventsTitle: 'Próximos eventos',
       eventsSubtitle: 'Agenda pública del artista',
       eventsEmpty: 'No hay eventos próximos en este momento.',
@@ -171,9 +167,7 @@ const messages: Record<LocaleCode, Messages> = {
     section: {
       aboutTitle: 'About',
       releasesTitle: 'Releases',
-      releasesSubtitle: 'Spotify embeds',
       videosTitle: 'Videos',
-      videosSubtitle: 'YouTube embeds',
       eventsTitle: 'Upcoming events',
       eventsSubtitle: 'Public artist calendar',
       eventsEmpty: 'No upcoming events right now.',
