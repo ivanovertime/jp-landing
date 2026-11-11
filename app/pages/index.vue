@@ -55,8 +55,11 @@ const { data: feed, pending, error, refresh: refreshFeed } = await useFetch<Feed
   })
 })
 
+const eventsEnabled = useRuntimeConfig().public.eventsEnabled === true
+
 const { data: eventsFeed, pending: eventsPending, error: eventsError, refresh: refreshEvents } = await useFetch<EventsResponse>('/api/events', {
   key: 'events',
+  immediate: eventsEnabled,
   default: () => ({
     updatedAt: '',
     items: []
@@ -231,7 +234,9 @@ const handleContactSubmit = () => {
 }
 
 onMounted(() => {
-  refreshEvents()
+  if (eventsEnabled) {
+    refreshEvents()
+  }
   refreshFeed()
 })
 
@@ -578,6 +583,7 @@ const formatEventDateRange = (item: EventItem) => {
     </Motion>
 
     <Motion
+      v-if="eventsEnabled"
       id="section-events"
       as="section"
       v-bind="sectionMotion"
