@@ -17,7 +17,6 @@ type Messages = {
   }
   section: {
     aboutTitle: string
-    bioTitle: string
     releasesTitle: string
     videosTitle: string
     eventsTitle: string
@@ -91,7 +90,6 @@ const messages: Record<LocaleCode, Messages> = {
     },
     section: {
       aboutTitle: 'Sobre mi',
-      bioTitle: 'Biografía',
       releasesTitle: 'Lanzamientos',
       videosTitle: 'Videos',
       eventsTitle: 'Próximos eventos',
@@ -142,10 +140,12 @@ const messages: Record<LocaleCode, Messages> = {
     },
     copy: {
       about: [
-        'Jhey Pi es un artista urbano venezolano radicado en Estados Unidos que ha construido, de manera completamente independiente, una comunidad que supera el millón de seguidores orgánicos en plataformas digitales. Su propuesta musical combina sensibilidad melódica, energía urbana contemporánea y una identidad auténtica que conecta con audiencias jóvenes latinas dentro y fuera de Estados Unidos.',
-        'Su sencillo “Making LUV” marcó un punto de consolidación en su proyección internacional, superando las 130.000 reproducciones en Spotify y mostrando una respuesta destacada en España durante sus primeras semanas. El lanzamiento evidenció métricas sólidas de guardados, repetición orgánica y retención de audiencia, indicadores clave de conexión real más allá del consumo puntual.',
-        'El proyecto se ha desarrollado sin respaldo de una disquera multinacional, bajo un modelo independiente estructurado que integra planificación estratégica de lanzamientos, optimización de plataformas digitales y construcción constante de marca. El crecimiento ha sido sostenido, basado en disciplina, consistencia y una comunidad auténtica que responde activamente a cada estreno.',
-        'Actualmente, Jhey Pi se encuentra en una etapa de expansión y consolidación internacional, fortaleciendo su identidad musical y visual mientras proyecta nuevas colaboraciones y alianzas estratégicas que potencien el alcance de un proyecto ya validado de forma orgánica.'
+        'Jhey Pi es un cantante, compositor e intérprete venezolano de 17 años, radicado en Estados Unidos. Su trayectoria artística comenzó desde la infancia, destacándose en la música, la actuación y la televisión.',
+        'Con más de un millón de seguidores orgánicos en redes sociales y un catálogo de más de 100 canciones publicadas, ha construido una carrera independiente caracterizada por su versatilidad, autenticidad y conexión con las nuevas generaciones.',
+        'Su propuesta fusiona trap latino, pop urbano y sonidos contemporáneos.',
+        'Durante 2026 fortaleció su proyección internacional con colaboraciones junto a Micro TDH en «Fer y Juan», Chino & Nacho en «GPT», Rummy Olivo, Sixto Rein y Neeus.',
+        'Su canción «Trompeta», compuesta por él y grabada en su habitación en 2025, superó las 400.000 reproducciones en Spotify y recibió atención de Univision.',
+        'Jhey Pi continúa consolidándose como una de las jóvenes promesas de la música urbana venezolana.'
       ]
     },
     errors: {
@@ -168,7 +168,6 @@ const messages: Record<LocaleCode, Messages> = {
     },
     section: {
       aboutTitle: 'About',
-      bioTitle: 'Bio',
       releasesTitle: 'Releases',
       videosTitle: 'Videos',
       eventsTitle: 'Upcoming events',
