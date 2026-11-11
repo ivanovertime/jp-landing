@@ -1,22 +1,51 @@
 <script setup lang="ts">
 import { Motion, easeOut } from 'motion-v'
 
+const { locale, locales, t, tArray } = useTranslations()
+
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'MusicGroup',
+    'name': 'Jhey Pi',
+    'url': 'https://jheypi.com/',
+    'image': 'https://jheypi.com/social-preview.png',
+    'genre': ['Latin urban', 'Urbano latino'],
+    'sameAs': [
+      'https://www.instagram.com/jpoficial_10',
+      'https://www.youtube.com/c/JpJheyPi/featured',
+      'https://www.facebook.com/juanmanuelparrabu',
+      'https://www.tiktok.com/@jhey.pii',
+      'https://open.spotify.com/artist/12TET0GvQuCAO3O1tfwrf4'
+    ]
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    'name': 'Jhey Pi',
+    'url': 'https://jheypi.com/'
+  }
+]
+
 useHead({
   meta: [
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    { name: 'theme-color', content: '#0c0a09' }
   ],
   link: [
-    { rel: 'icon', href: '/favicon.ico' }
+    { rel: 'icon', href: '/favicon.ico' },
+    { rel: 'canonical', href: 'https://jheypi.com/' }
   ],
   htmlAttrs: {
-    lang: 'en',
+    lang: () => locale.value === 'en' ? 'en' : 'es',
     class: 'dark'
-  }
+  },
+  script: [
+    { type: 'application/ld+json', innerHTML: JSON.stringify(structuredData) }
+  ]
 })
 
 const fallbackDescription = 'Official landing page for Jhey Pi — releases, videos, and updates in one place.'
-
-const { locale, locales, t, tArray } = useTranslations()
 
 const aboutCopy = computed(() => tArray('copy.about'))
 
@@ -101,7 +130,13 @@ useSeoMeta({
   description: seoDescription,
   ogTitle: seoTitle,
   ogDescription: seoDescription,
+  ogType: 'website',
+  ogUrl: 'https://jheypi.com/',
+  ogSiteName: 'Jhey Pi',
+  ogLocale: () => locale.value === 'en' ? 'en_US' : 'es_ES',
   ogImage: '/social-preview.png',
+  ogImageWidth: '1200',
+  ogImageHeight: '630',
   twitterTitle: seoTitle,
   twitterDescription: seoDescription,
   twitterImage: '/social-preview.png',
