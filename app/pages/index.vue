@@ -390,9 +390,6 @@ const formatEventDateRange = (item: EventItem) => {
           <h2 class="text-2xl font-semibold">
             {{ t('section.releasesTitle') }}
           </h2>
-          <p class="text-sm text-muted">
-            {{ t('section.releasesSubtitle') }}
-          </p>
         </div>
         <UBadge
           color="neutral"
@@ -473,9 +470,6 @@ const formatEventDateRange = (item: EventItem) => {
           <h2 class="text-2xl font-semibold">
             {{ t('section.videosTitle') }}
           </h2>
-          <p class="text-sm text-muted">
-            {{ t('section.videosSubtitle') }}
-          </p>
         </div>
         <UBadge
           color="neutral"
