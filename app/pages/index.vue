@@ -102,7 +102,11 @@ const linkIcons = {
 
 const releases = computed(() => items.value.filter(item => item.provider === 'spotify'))
 const shorts = computed(() => items.value.filter(item => item.provider === 'youtube' && item.type === 'short'))
-const videos = computed(() => items.value.filter(item => item.provider === 'youtube' && item.type !== 'short'))
+const youtubeVideos = computed(() => items.value.filter(item => item.provider === 'youtube' && item.type === 'video'))
+
+const releaseToVideo = computed(() => matchReleasesToVideos(releases.value, youtubeVideos.value))
+const matchedVideoIds = computed(() => new Set([...releaseToVideo.value.values()].map(video => video.id)))
+const videos = computed(() => youtubeVideos.value.filter(video => !matchedVideoIds.value.has(video.id)))
 
 const singles = computed(() => releases.value.filter(item => item.type === 'single'))
 const albums = computed(() => releases.value.filter(item => item.type !== 'single'))
@@ -237,7 +241,7 @@ onMounted(() => {
   refreshFeed()
 })
 
-type MediaVersion = ChangelogVersionProps & { item: FeedItem }
+type MediaVersion = ChangelogVersionProps & { item: FeedItem, video?: FeedItem }
 
 const releaseVersions = computed<MediaVersion[]>(() =>
   pagedReleases.value
@@ -248,6 +252,7 @@ const releaseVersions = computed<MediaVersion[]>(() =>
       date: item.date || feed.value?.updatedAt || new Date().toISOString(),
       // badge: 'Release',
       item,
+      video: releaseToVideo.value.get(item.id),
       ui: {
         container: 'max-w-none'
       }
@@ -431,6 +436,11 @@ const formatEventDateRange = (item: EventItem) => {
             <template #body="{ version }">
               <div class="mt-6">
                 <EmbedFrame :item="version.item" />
+                <EmbedFrame
+                  v-if="version.video"
+                  :item="version.video"
+                  class="mt-2"
+                />
               </div>
             </template>
           </UChangelogVersions>

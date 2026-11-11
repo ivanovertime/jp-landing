@@ -93,11 +93,11 @@ const messages: Record<LocaleCode, Messages> = {
     section: {
       aboutTitle: 'Sobre mi',
       releasesTitle: 'Lanzamientos',
-      releasesSubtitle: 'Embeds de Spotify · Actualizado cada hora',
+      releasesSubtitle: 'Embeds de Spotify · Se actualiza automáticamente',
       videosTitle: 'Videos',
-      videosSubtitle: 'Embeds de YouTube · Actualizado cada hora',
+      videosSubtitle: 'Embeds de YouTube · Se actualiza automáticamente',
       eventsTitle: 'Próximos eventos',
-      eventsSubtitle: 'Agenda pública del artista · Actualizado cada hora',
+      eventsSubtitle: 'Agenda pública del artista · Se actualiza automáticamente',
       eventsEmpty: 'No hay eventos próximos en este momento.',
       contactTitle: 'Contacto'
     },
@@ -171,11 +171,11 @@ const messages: Record<LocaleCode, Messages> = {
     section: {
       aboutTitle: 'About',
       releasesTitle: 'Releases',
-      releasesSubtitle: 'Spotify embeds · Updated hourly',
+      releasesSubtitle: 'Spotify embeds · Updated automatically',
       videosTitle: 'Videos',
-      videosSubtitle: 'YouTube embeds · Updated hourly',
+      videosSubtitle: 'YouTube embeds · Updated automatically',
       eventsTitle: 'Upcoming events',
-      eventsSubtitle: 'Public artist calendar · Updated hourly',
+      eventsSubtitle: 'Public artist calendar · Updated automatically',
       eventsEmpty: 'No upcoming events right now.',
       contactTitle: 'Contact'
     },
