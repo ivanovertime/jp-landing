@@ -44,7 +44,7 @@ type EventsResponse = {
   items: EventItem[]
 }
 
-const { data: feed, pending, error } = await useFetch<FeedResponse>('/api/feed', {
+const { data: feed, pending, error, refresh: refreshFeed } = await useFetch<FeedResponse>('/api/feed', {
   key: 'feed',
   default: () => ({
     updatedAt: '',
@@ -190,6 +190,7 @@ const handleContactSubmit = () => {
 
 onMounted(() => {
   refreshEvents()
+  refreshFeed()
 })
 
 type MediaVersion = ChangelogVersionProps & { item: FeedItem }
