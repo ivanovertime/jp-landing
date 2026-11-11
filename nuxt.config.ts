@@ -1,6 +1,4 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const isProd = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.NODE_ENV === 'production'
-
 export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
@@ -59,13 +57,6 @@ export default defineNuxtConfig({
     public: 'public'
   },
   srcDir: 'app',
-
-  routeRules: isProd
-    ? {
-        '/api/feed': { cache: { maxAge: 3600, staleMaxAge: 600 } },
-        '/api/events': { cache: { maxAge: 900, staleMaxAge: 300 } }
-      }
-    : {},
 
   compatibilityDate: '2025-01-15',
 
