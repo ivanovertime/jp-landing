@@ -17,6 +17,7 @@ type Messages = {
   }
   section: {
     aboutTitle: string
+    bioTitle: string
     releasesTitle: string
     videosTitle: string
     eventsTitle: string
@@ -90,6 +91,7 @@ const messages: Record<LocaleCode, Messages> = {
     },
     section: {
       aboutTitle: 'Sobre mi',
+      bioTitle: 'Biografía',
       releasesTitle: 'Lanzamientos',
       videosTitle: 'Videos',
       eventsTitle: 'Próximos eventos',
@@ -166,6 +168,7 @@ const messages: Record<LocaleCode, Messages> = {
     },
     section: {
       aboutTitle: 'About',
+      bioTitle: 'Bio',
       releasesTitle: 'Releases',
       videosTitle: 'Videos',
       eventsTitle: 'Upcoming events',

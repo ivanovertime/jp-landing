@@ -17,6 +17,7 @@ type FeedItem = {
 type FeedResponse = {
   updatedAt: string
   items: FeedItem[]
+  channelDescription?: string
   artist?: {
     id: string
     name: string
@@ -49,6 +50,7 @@ const { data: feed, pending, error, refresh: refreshFeed } = await useFetch<Feed
   default: () => ({
     updatedAt: '',
     items: [],
+    channelDescription: '',
     artist: undefined
   })
 })
@@ -67,6 +69,7 @@ const { data: eventsFeed, pending: eventsPending, error: eventsError, refresh: r
 const items = computed(() => feed.value?.items ?? [])
 
 const artist = computed(() => feed.value?.artist ?? null)
+const channelDescription = computed(() => feed.value?.channelDescription || '')
 const events = computed(() => eventsFeed.value?.items ?? [])
 
 const { locale, t, tArray } = useTranslations()
@@ -371,6 +374,17 @@ const formatEventDateRange = (item: EventItem) => {
                   :class="{ 'mt-4': index > 0 }"
                 >
                   {{ paragraph }}
+                </p>
+              </div>
+              <div
+                v-if="channelDescription"
+                class="w-full rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-muted"
+              >
+                <h2 class="text-sm font-semibold">
+                  {{ t('section.bioTitle') }}
+                </h2>
+                <p class="mt-2 whitespace-pre-line">
+                  {{ channelDescription }}
                 </p>
               </div>
             </div>
