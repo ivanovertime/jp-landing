@@ -13,6 +13,7 @@ type FeedResponse = {
   updatedAt: string
   items: FeedItem[]
   artist?: SpotifyArtist
+  channelDescription: string
 }
 
 export default defineEventHandler(async (event): Promise<FeedResponse> => {
@@ -28,7 +29,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   const maxYoutubeItems = Number(query.youtubeLimit || config.maxYoutubeItems || 24)
   const maxSpotifyItems = Number(query.spotifyLimit || config.maxSpotifyItems || 24)
 
-  const { items: youtubeItems } = await fetchYouTubeItems({
+  const { items: youtubeItems, channelId: youtubeChannelId } = await fetchYouTubeItems({
     channelUrl: config.youtubeChannelUrl,
     channelId: config.youtubeChannelId,
     limit: maxYoutubeItems
@@ -45,6 +46,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   items.push(...spotifyItems)
 
   const spotifyArtist = await fetchSpotifyArtist(spotifyConfig)
+  const channelDescription = await fetchYouTubeChannelDescription(config.youtubeApiKey, youtubeChannelId)
 
   const nowIso = new Date().toISOString()
   const normalizedItems = items
@@ -63,7 +65,8 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   return {
     updatedAt: new Date().toISOString(),
     items: normalizedItems,
-    artist: spotifyArtist || undefined
+    artist: spotifyArtist || undefined,
+    channelDescription
   }
 })
 
@@ -105,6 +108,22 @@ async function fetchYouTubeItems({ channelUrl, channelId, limit = 24 }: YouTubeC
     return { items, channelId: resolvedChannelId }
   } catch {
     return { items: [], channelId: null }
+  }
+}
+
+async function fetchYouTubeChannelDescription(apiKey: string, channelId: string | null): Promise<string> {
+  if (!apiKey || !channelId) {
+    return ''
+  }
+
+  try {
+    const response = await $fetch<{ items?: { snippet?: { description?: string } }[] }>(
+      `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${apiKey}`
+    )
+
+    return response.items?.[0]?.snippet?.description?.trim() || ''
+  } catch {
+    return ''
   }
 }
 

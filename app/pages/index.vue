@@ -17,6 +17,7 @@ type FeedItem = {
 type FeedResponse = {
   updatedAt: string
   items: FeedItem[]
+  channelDescription?: string
   artist?: {
     id: string
     name: string
@@ -49,6 +50,7 @@ const { data: feed, pending, error, refresh: refreshFeed } = await useFetch<Feed
   default: () => ({
     updatedAt: '',
     items: [],
+    channelDescription: '',
     artist: undefined
   })
 })
@@ -67,10 +69,29 @@ const { data: eventsFeed, pending: eventsPending, error: eventsError, refresh: r
 const items = computed(() => feed.value?.items ?? [])
 
 const artist = computed(() => feed.value?.artist ?? null)
+const channelDescription = computed(() => feed.value?.channelDescription || '')
 const events = computed(() => eventsFeed.value?.items ?? [])
 
 const { locale, t, tArray } = useTranslations()
-const aboutCopy = computed(() => tArray('copy.about'))
+const aboutCopy = computed(() => channelDescription.value
+  ? channelDescription.value.split(/\n+/).map(s => s.trim()).filter(Boolean)
+  : tArray('copy.about'))
+
+const fallbackDescription = 'Official landing page for Jhey Pi — releases, videos, and updates in one place.'
+
+const seoDescription = computed(() => {
+  const [firstParagraph = ''] = aboutCopy.value
+  const description = (firstParagraph || fallbackDescription)
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  return description.length > 160 ? `${description.slice(0, 157)}...` : description
+})
+
+useSeoMeta({
+  description: seoDescription,
+  ogDescription: seoDescription
+})
 
 const followersCount = computed(() => {
   if (!Number.isFinite(artist.value?.followers)) {
