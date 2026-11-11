@@ -13,6 +13,7 @@ type FeedResponse = {
   updatedAt: string
   items: FeedItem[]
   artist?: SpotifyArtist
+  topTracks: FeedItem[]
 }
 
 export default defineEventHandler(async (event): Promise<FeedResponse> => {
@@ -45,6 +46,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   items.push(...spotifyItems)
 
   const spotifyArtist = await fetchSpotifyArtist(spotifyConfig)
+  const topTracks = await fetchSpotifyTopTracks(spotifyConfig)
 
   const nowIso = new Date().toISOString()
   const normalizedItems = items
@@ -63,7 +65,8 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   return {
     updatedAt: new Date().toISOString(),
     items: normalizedItems,
-    artist: spotifyArtist || undefined
+    artist: spotifyArtist || undefined,
+    topTracks
   }
 })
 
@@ -179,8 +182,17 @@ type SpotifyAlbumsResponse = {
     id: string
     name: string
     release_date: string
+    album_type: string
   }[]
   next: string | null
+}
+
+type SpotifyTopTracksResponse = {
+  tracks: {
+    id: string
+    name: string
+    album: { release_date: string }
+  }[]
 }
 
 async function fetchSpotifyItems({ clientId, clientSecret, artistId }: SpotifyConfig, limit = 24): Promise<FeedItem[]> {
@@ -208,7 +220,7 @@ async function fetchSpotifyItems({ clientId, clientSecret, artistId }: SpotifyCo
         ...albums.items.map<FeedItem>(album => ({
           id: `sp_${album.id}`,
           provider: 'spotify',
-          type: 'album',
+          type: album.album_type === 'single' ? 'single' : (album.album_type || 'album'),
           embedUrl: `https://open.spotify.com/embed/album/${album.id}`,
           height: '152px',
           title: album.name,
@@ -259,6 +271,36 @@ async function fetchSpotifyArtist({ clientId, clientSecret, artistId }: SpotifyC
     }
   } catch {
     return null
+  }
+}
+
+async function fetchSpotifyTopTracks({ clientId, clientSecret, artistId }: SpotifyConfig, limit = 6): Promise<FeedItem[]> {
+  if (!clientId || !clientSecret || !artistId) {
+    return []
+  }
+
+  try {
+    const token = await fetchSpotifyToken(clientId, clientSecret)
+    const response = await $fetch<SpotifyTopTracksResponse>(
+      `https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    )
+
+    return (response.tracks || []).slice(0, limit).map<FeedItem>(track => ({
+      id: `sp_${track.id}`,
+      provider: 'spotify',
+      type: 'track',
+      embedUrl: `https://open.spotify.com/embed/track/${track.id}`,
+      height: '152px',
+      title: track.name,
+      date: track.album?.release_date
+    }))
+  } catch {
+    return []
   }
 }
 
