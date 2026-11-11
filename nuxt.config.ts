@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const isProd = !import.meta.dev
+const isProd = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.NODE_ENV === 'production'
 
 export default defineNuxtConfig({
   modules: [
