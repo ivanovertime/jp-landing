@@ -17,8 +17,6 @@ type FeedItem = {
 type FeedResponse = {
   updatedAt: string
   items: FeedItem[]
-  topTracks?: FeedItem[]
-  channelDescription?: string
   artist?: {
     id: string
     name: string
@@ -51,8 +49,6 @@ const { data: feed, pending, error, refresh: refreshFeed } = await useFetch<Feed
   default: () => ({
     updatedAt: '',
     items: [],
-    topTracks: [],
-    channelDescription: '',
     artist: undefined
   })
 })
@@ -69,10 +65,8 @@ const { data: eventsFeed, pending: eventsPending, error: eventsError, refresh: r
 })
 
 const items = computed(() => feed.value?.items ?? [])
-const topTracks = computed(() => feed.value?.topTracks ?? [])
 
 const artist = computed(() => feed.value?.artist ?? null)
-const channelDescription = computed(() => feed.value?.channelDescription || '')
 const events = computed(() => eventsFeed.value?.items ?? [])
 
 const { locale, t, tArray } = useTranslations()
@@ -374,17 +368,6 @@ const formatEventDateRange = (item: EventItem) => {
                   {{ paragraph }}
                 </p>
               </div>
-              <div
-                v-if="channelDescription"
-                class="w-full rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-muted"
-              >
-                <h2 class="text-sm font-semibold">
-                  {{ t('section.bioTitle') }}
-                </h2>
-                <p class="mt-2 whitespace-pre-line">
-                  {{ channelDescription }}
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -466,55 +449,6 @@ const formatEventDateRange = (item: EventItem) => {
             />
           </div>
         </template>
-      </div>
-    </Motion>
-
-    <Motion
-      id="section-tracks"
-      as="section"
-      v-bind="sectionMotion"
-      class="flex flex-col gap-6"
-    >
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 class="text-2xl font-semibold">
-            {{ t('section.tracksTitle') }}
-          </h2>
-          <p class="text-sm text-muted">
-            {{ t('section.tracksSubtitle') }}
-          </p>
-        </div>
-        <UBadge
-          color="neutral"
-          variant="subtle"
-        >
-          {{ t('badges.mostPlayed') }}
-        </UBadge>
-      </div>
-
-      <div
-        v-if="error"
-        class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200"
-      >
-        {{ t('errors.tracks') }}
-      </div>
-
-      <div
-        v-else-if="topTracks.length === 0"
-        class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-muted"
-      >
-        {{ t('section.tracksEmpty') }}
-      </div>
-
-      <div
-        v-else
-        class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <EmbedFrame
-          v-for="track in topTracks.slice(0, 6)"
-          :key="track.id"
-          :item="track"
-        />
       </div>
     </Motion>
 

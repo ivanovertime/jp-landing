@@ -13,8 +13,6 @@ type FeedResponse = {
   updatedAt: string
   items: FeedItem[]
   artist?: SpotifyArtist
-  topTracks: FeedItem[]
-  channelDescription: string
 }
 
 export default defineEventHandler(async (event): Promise<FeedResponse> => {
@@ -30,7 +28,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   const maxYoutubeItems = Number(query.youtubeLimit || config.maxYoutubeItems || 24)
   const maxSpotifyItems = Number(query.spotifyLimit || config.maxSpotifyItems || 24)
 
-  const { items: youtubeItems, channelId: youtubeChannelId } = await fetchYouTubeItems({
+  const { items: youtubeItems } = await fetchYouTubeItems({
     channelUrl: config.youtubeChannelUrl,
     channelId: config.youtubeChannelId,
     limit: maxYoutubeItems
@@ -47,8 +45,6 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   items.push(...spotifyItems)
 
   const spotifyArtist = await fetchSpotifyArtist(spotifyConfig)
-  const topTracks = await fetchSpotifyTopTracks(spotifyConfig)
-  const channelDescription = await fetchYouTubeChannelDescription(config.youtubeApiKey, youtubeChannelId)
 
   const nowIso = new Date().toISOString()
   const normalizedItems = items
@@ -67,9 +63,7 @@ export default defineEventHandler(async (event): Promise<FeedResponse> => {
   return {
     updatedAt: new Date().toISOString(),
     items: normalizedItems,
-    artist: spotifyArtist || undefined,
-    topTracks,
-    channelDescription
+    artist: spotifyArtist || undefined
   }
 })
 
@@ -111,22 +105,6 @@ async function fetchYouTubeItems({ channelUrl, channelId, limit = 24 }: YouTubeC
     return { items, channelId: resolvedChannelId }
   } catch {
     return { items: [], channelId: null }
-  }
-}
-
-async function fetchYouTubeChannelDescription(apiKey: string, channelId: string | null): Promise<string> {
-  if (!apiKey || !channelId) {
-    return ''
-  }
-
-  try {
-    const response = await $fetch<{ items?: { snippet?: { description?: string } }[] }>(
-      `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${apiKey}`
-    )
-
-    return response.items?.[0]?.snippet?.description?.trim() || ''
-  } catch {
-    return ''
   }
 }
 
@@ -210,14 +188,6 @@ type SpotifyAlbumsResponse = {
   next: string | null
 }
 
-type SpotifyTopTracksResponse = {
-  tracks: {
-    id: string
-    name: string
-    album: { release_date: string }
-  }[]
-}
-
 async function fetchSpotifyItems({ clientId, clientSecret, artistId }: SpotifyConfig, limit = 24): Promise<FeedItem[]> {
   if (!clientId || !clientSecret || !artistId) {
     return []
@@ -294,36 +264,6 @@ async function fetchSpotifyArtist({ clientId, clientSecret, artistId }: SpotifyC
     }
   } catch {
     return null
-  }
-}
-
-async function fetchSpotifyTopTracks({ clientId, clientSecret, artistId }: SpotifyConfig, limit = 6): Promise<FeedItem[]> {
-  if (!clientId || !clientSecret || !artistId) {
-    return []
-  }
-
-  try {
-    const token = await fetchSpotifyToken(clientId, clientSecret)
-    const response = await $fetch<SpotifyTopTracksResponse>(
-      `https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    )
-
-    return (response.tracks || []).slice(0, limit).map<FeedItem>(track => ({
-      id: `sp_${track.id}`,
-      provider: 'spotify',
-      type: 'track',
-      embedUrl: `https://open.spotify.com/embed/track/${track.id}`,
-      height: '152px',
-      title: track.name,
-      date: track.album?.release_date
-    }))
-  } catch {
-    return []
   }
 }
 

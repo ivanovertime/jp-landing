@@ -43,7 +43,6 @@ export default defineNuxtConfig({
       spotifyArtistId: env.SPOTIFY_ARTIST_ID || '12TET0GvQuCAO3O1tfwrf4',
       youtubeChannelUrl: env.YOUTUBE_CHANNEL_URL || 'https://www.youtube.com/c/JpJheyPi',
       youtubeChannelId: env.YOUTUBE_CHANNEL_ID || '',
-      youtubeApiKey: env.YOUTUBE_API_KEY || '',
       maxYoutubeItems: env.MAX_YOUTUBE_ITEMS || '24',
       maxSpotifyItems: env.MAX_SPOTIFY_ITEMS || '24',
       googleCalendarApiKey: env.GOOGLE_CALENDAR_API_KEY || env.GOOGLE_API_KEY || '',
