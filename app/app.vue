@@ -134,12 +134,12 @@ useSeoMeta({
   ogUrl: 'https://jheypi.com/',
   ogSiteName: 'Jhey Pi',
   ogLocale: () => locale.value === 'en' ? 'en_US' : 'es_ES',
-  ogImage: '/social-preview.png',
+  ogImage: 'https://jheypi.com/social-preview.png',
   ogImageWidth: '1200',
   ogImageHeight: '630',
   twitterTitle: seoTitle,
   twitterDescription: seoDescription,
-  twitterImage: '/social-preview.png',
+  twitterImage: 'https://jheypi.com/social-preview.png',
   twitterCard: 'summary_large_image'
 })
 </script>
