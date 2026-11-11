@@ -166,6 +166,7 @@ type SpotifyConfig = {
 
 type SpotifyTokenResponse = {
   access_token: string
+  expires_in: number
 }
 
 type SpotifyArtist = {
@@ -220,7 +221,7 @@ async function fetchSpotifyItems({ clientId, clientSecret, artistId }: SpotifyCo
         ...albums.items.map<FeedItem>(album => ({
           id: `sp_${album.id}`,
           provider: 'spotify',
-          type: album.album_type === 'single' ? 'single' : (album.album_type || 'album'),
+          type: album.album_type || 'album',
           embedUrl: `https://open.spotify.com/embed/album/${album.id}`,
           height: '152px',
           title: album.name,
@@ -304,7 +305,13 @@ async function fetchSpotifyTopTracks({ clientId, clientSecret, artistId }: Spoti
   }
 }
 
+let cachedToken: { value: string, expiresAt: number } | null = null
+
 async function fetchSpotifyToken(clientId: string, clientSecret: string): Promise<string> {
+  if (cachedToken && Date.now() < cachedToken.expiresAt) {
+    return cachedToken.value
+  }
+
   const credentials = toBase64(`${clientId}:${clientSecret}`)
   const body = new URLSearchParams({ grant_type: 'client_credentials' })
 
@@ -317,7 +324,12 @@ async function fetchSpotifyToken(clientId: string, clientSecret: string): Promis
     body
   })
 
-  return response.access_token
+  cachedToken = {
+    value: response.access_token,
+    expiresAt: Date.now() + response.expires_in * 1000 - 60000
+  }
+
+  return cachedToken.value
 }
 
 function toBase64(value: string): string {
