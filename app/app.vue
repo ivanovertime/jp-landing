@@ -33,7 +33,8 @@ useHead({
     { name: 'theme-color', content: '#0c0a09' }
   ],
   link: [
-    { rel: 'icon', href: '/favicon.ico' },
+    { rel: 'icon', type: 'image/svg+xml', href: '/JP_yellow.svg' },
+    { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
     { rel: 'canonical', href: 'https://jheypi.com/' }
   ],
   htmlAttrs: {
